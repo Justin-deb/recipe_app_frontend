@@ -20,6 +20,8 @@ import {
 } from '../ui/field';
 import { Input } from '../ui/input';
 import { useNavigate } from 'react-router';
+import { useLocalStorage } from '@uidotdev/usehooks';
+import { Login } from '../../services/user-service';
 
 const formSchema = z.object({
   email: z.email('Debe ser un correo valido').trim(),
@@ -27,6 +29,7 @@ const formSchema = z.object({
 });
 export function LoginForm() {
   const navigate = useNavigate();
+  const [, setUser] = useLocalStorage('user_session');
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -35,21 +38,14 @@ export function LoginForm() {
       password: ''
     }
   });
-  function onSubmit(data: z.infer<typeof formSchema>) {
-    toast('You submitted the following values:', {
-      description: (
-        <pre className='mt-2 w-[320px] overflow-x-auto rounded-md bg-code p-4 text-code-foreground'>
-          <code>{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-      position: 'bottom-right',
-      classNames: {
-        content: 'flex flex-col gap-2'
-      },
-      style: {
-        '--border-radius': 'calc(var(--radius)  + 4px)'
-      } as React.CSSProperties
-    });
+  async function onSubmit(data: z.infer<typeof formSchema>) {
+    const res = await Login(data);
+    if (res.error) {
+      toast.error(res.error);
+    } else {
+      setUser(res.data);
+      toast.success(`Bienvenido de vuelta, ${res.data?.username}`);
+    }
   }
   return (
     <Card className='w-full sm:max-w-md rounded h-full'>
@@ -79,6 +75,8 @@ export function LoginForm() {
                     aria-invalid={fieldState.invalid}
                     placeholder='correo@dominio.com'
                     autoComplete='email'
+                    required
+                    aria-required
                   />
                   {fieldState.invalid && (
                     <FieldError
@@ -101,10 +99,12 @@ export function LoginForm() {
                   </FieldLabel>
                   <Input
                     {...field}
-                    id='form-rhf-input-email'
+                    id='form-rhf-input-password'
                     aria-invalid={fieldState.invalid}
                     placeholder='*******'
                     autoComplete='password'
+                    required
+                    aria-required
                   />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />

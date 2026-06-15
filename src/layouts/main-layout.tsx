@@ -10,11 +10,11 @@ export default function MainLayout() {
       <main className='p-4 pb-20 min-h-[100dvh] w-full bg-background flex'>
         <Toaster
           icons={{
-            close: <X />,
-            error: <Ban />,
-            info: <Info />,
-            success: <CircleCheck />,
-            warning: <TriangleAlert />
+            close: <X size={20} />,
+            error: <Ban size={20} />,
+            info: <Info size={20} />,
+            success: <CircleCheck size={20} />,
+            warning: <TriangleAlert size={20} />
           }}
           closeButton
           hotkey={['esc']}

@@ -37,7 +37,7 @@ export default function AppRoutes() {
           <Route element={<PrivateLayout />}>
             {/* Ruta base de cuenta */}
             <Route
-              path='/recetas/crear'
+              path='/crear'
               element={<Home />}
             />
             <Route
