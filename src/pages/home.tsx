@@ -48,7 +48,7 @@ export default function Home() {
           <h1>Hubo un error: ${error}</h1>
         : recipes.map((recipe) => (
             <div
-              className='bg-card shadow-lg rounded'
+              className='bg-card shadow-xl shadow-primary rounded'
               key={recipe.id}
             >
               <div>
@@ -75,17 +75,20 @@ export default function Home() {
                   {recipe.description}
                 </p>
                 <div className='flex items-center justify-end pt-4 gap-2'>
-                  <Button className='rounded flex-1'>
+                  <Button
+                    className='rounded flex-1'
+                    size={'icon-lg'}
+                  >
                     <span>Ver detalles</span>
                   </Button>
                   <Button
+                    size={'icon-lg'}
                     variant={'outline'}
                     className='rounded'
                   >
-                    <span>Guardar</span>
                     <HeartIcon
                       size={44}
-                      className='text-foreground/70'
+                      className='text-foreground/70 w-full h-full'
                     />
                   </Button>
                 </div>

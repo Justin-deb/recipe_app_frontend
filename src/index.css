@@ -1,6 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Geist:ital,wght@0,100..900;1,100..900&family=Outfit:wght@100..900&display=swap');
 @import 'tailwindcss';
 
+#root {
+  heigth: 100dvh;
+}
+
 @custom-variant dark (@media (prefers-color-scheme: dark)), (&:is(.dark *));
 
 @theme inline {
@@ -86,7 +90,7 @@
   --muted-foreground: oklch(0.5341 0.0078 97.4503);
   --accent: oklch(0.9245 0.0138 92.9892);
   --accent-foreground: oklch(0.2671 0.0196 98.939);
-  --destructive: oklch(0.1908 0.002 106.5859);
+  --destructive: oklch(0.5412 0.2294 27.53);
   --destructive-foreground: oklch(1 0 0);
   --border: oklch(0.8847 0.0069 97.3627);
   --input: oklch(0.7621 0.0156 98.3528);

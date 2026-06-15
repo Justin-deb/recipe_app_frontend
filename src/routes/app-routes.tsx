@@ -3,36 +3,37 @@ import Home from '../pages/home';
 import MainLayout from '../layouts/main-layout';
 import { PrivateLayout, PublicOnlyLayout } from '../layouts/auth-layout';
 import { LoginPage } from '../pages/login';
+import RecipesPage from '../pages/recipes';
 
 export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Rutas exclusivamente publicas */}
-        <Route element={<PublicOnlyLayout />}>
-          <Route
-            path='/login'
-            element={<LoginPage />}
-          />
-          <Route
-            path='/register'
-            element={<h1>Página de Registro</h1>}
-          />
-        </Route>
-
         {/* Layout de diseno principal */}
         <Route element={<MainLayout />}>
-          {/* Rutas públicas generales (Cualquiera las puede ver) */}
+          {/* Rutas exclusivamente publicas */}
+          <Route element={<PublicOnlyLayout />}>
+            <Route
+              path='/login'
+              element={<LoginPage />}
+            />
+            <Route
+              path='/register'
+              element={<h1>Página de Registro</h1>}
+            />
+          </Route>
+
+          {/* rutas publicas (cualquiera las puede ver) */}
           <Route
             index
             element={<Home />}
           />
           <Route
             path='/recetas'
-            element={<Home />}
+            element={<RecipesPage />}
           />
 
-          {/* RUTAS PRIVADAS (Requieren login y estan adentro de MainLayout) */}
+          {/* RUTAS PRIVADAS (ocupan login y estan adentro de MainLayout) */}
           <Route element={<PrivateLayout />}>
             {/* Ruta base de cuenta */}
             <Route
