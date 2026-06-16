@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { Recipe } from '../types/types';
-import type { DataResponse } from '../types/data-response';
 import { getRecipes } from '../services/recipe-service';
-import { HeartIcon } from 'lucide-react';
-import { Button } from '../components/ui/button';
+import { RecipeCard } from '../components/recipe-card';
 
 export default function Home() {
   const [recipes, setRecipes] = useState<Recipe[]>([] as Recipe[]);
@@ -47,53 +45,10 @@ export default function Home() {
         : error && !recipes ?
           <h1>Hubo un error: ${error}</h1>
         : recipes.map((recipe) => (
-            <div
-              className='bg-card shadow-xl shadow-primary rounded'
-              key={recipe.id}
-            >
-              <div>
-                {/* Image */}
-                <img
-                  src={recipe.photo_url}
-                  alt=''
-                  className='w-full rounded'
-                />
-              </div>
-
-              <div className='px-4 pt-3 pb-4'>
-                {/* Title */}
-                <h1 className='pb-0 text-xl font-bold text-primary'>
-                  {recipe.name}
-                </h1>
-
-                {/* Rating */}
-                <h3 className='text-primary/60 text-xs pb-2'>
-                  Los usuarios votaron: 5/10
-                </h3>
-                {/* Description */}
-                <p className='text-card-foreground/50 leading-5 line-clamp-2 text-sm'>
-                  {recipe.description}
-                </p>
-                <div className='flex items-center justify-end pt-4 gap-2'>
-                  <Button
-                    className='rounded flex-1'
-                    size={'icon-lg'}
-                  >
-                    <span>Ver detalles</span>
-                  </Button>
-                  <Button
-                    size={'icon-lg'}
-                    variant={'outline'}
-                    className='rounded'
-                  >
-                    <HeartIcon
-                      size={44}
-                      className='text-foreground/70 w-full h-full'
-                    />
-                  </Button>
-                </div>
-              </div>
-            </div>
+            <RecipeCard
+              recipe={recipe}
+              key={recipe.name}
+            />
           ))
         }
       </section>

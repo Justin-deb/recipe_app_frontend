@@ -4,6 +4,9 @@ import MainLayout from '../layouts/main-layout';
 import { PrivateLayout, PublicOnlyLayout } from '../layouts/auth-layout';
 import { LoginPage } from '../pages/login';
 import RecipesPage from '../pages/recipes';
+import ProfilePage from '../pages/profile';
+import RegisterPage from '../pages/register';
+import RecipeDetailPage from '../pages/recipe-detail';
 
 export default function AppRoutes() {
   return (
@@ -19,7 +22,7 @@ export default function AppRoutes() {
             />
             <Route
               path='/register'
-              element={<h1>Página de Registro</h1>}
+              element={<RegisterPage />}
             />
           </Route>
 
@@ -32,21 +35,24 @@ export default function AppRoutes() {
             path='/recetas'
             element={<RecipesPage />}
           />
+          <Route
+            path='/recetas/:id'
+            element={<RecipeDetailPage />}
+          />
 
           {/* RUTAS PRIVADAS (ocupan login y estan adentro de MainLayout) */}
           <Route element={<PrivateLayout />}>
-            {/* Ruta base de cuenta */}
             <Route
               path='/crear'
-              element={<Home />}
+              element={<h1>Crear</h1>}
             />
             <Route
               path='/favoritos'
-              element={<Home />}
+              element={<h1>favoritos</h1>}
             />
             <Route
               path='/cuenta'
-              element={<h1>Tu Perfil Principal</h1>}
+              element={<ProfilePage />}
             />
             <Route
               path='/cuenta/mis-recetas'

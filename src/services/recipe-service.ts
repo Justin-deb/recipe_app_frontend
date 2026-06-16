@@ -19,3 +19,28 @@ export async function getRecipes(): Promise<GetRecipesResponse> {
     data: await res.json()
   };
 }
+
+export type GetRecipeByIdResponse = DataResponse<Recipe>;
+export async function getRecipeById(
+  id: string
+): Promise<GetRecipeByIdResponse> {
+  const res = await fetch(`${API_URL}/recipes/${id}`);
+  if (!res.ok) {
+    return {
+      error: 'Ocurrio un error al cargar la receta',
+      data: null
+    };
+  }
+
+  if (res.ok && res.status === 404) {
+    return {
+      error: 'No se encontro la receta',
+      data: null
+    };
+  }
+
+  return {
+    error: null,
+    data: await res.json()
+  };
+}

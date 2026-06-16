@@ -15,13 +15,30 @@ import { Field, FieldError, FieldGroup, FieldLabel } from '../ui/field';
 import { Input } from '../ui/input';
 import { useNavigate } from 'react-router';
 import { useLocalStorage } from '@uidotdev/usehooks';
-import { Login } from '../../services/user-service';
+import { Register } from '../../services/user-service';
 
-const formSchema = z.object({
-  email: z.email('Debe ser un correo valido').trim(),
-  password: z.string().trim()
-});
-export function LoginForm() {
+const formSchema = z
+  .object({
+    username: z
+      .string()
+      .min(4, 'Minimo 4 caracteres')
+      .max(30, 'Maximo 30 caracteres'),
+    email: z.email('Debe ser un correo válido').trim(),
+    password: z
+      .string()
+      .min(8, 'La contraseña debe tener al menos 8 caracteres')
+      .refine(
+        (val) => !val.includes(' '),
+        'La contraseña no puede contener espacios'
+      ),
+    confirm_password: z.string()
+  })
+  .refine((data) => data.password === data.confirm_password, {
+    message: 'Las contraseñas no coinciden',
+    path: ['confirm_password']
+  });
+
+export function RegisterForm() {
   const navigate = useNavigate();
   const [, setUser] = useLocalStorage('user_session');
 
@@ -29,25 +46,31 @@ export function LoginForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: '',
-      password: ''
-    }
+      password: '',
+      confirm_password: ''
+    },
+    mode: 'onBlur'
   });
+
   async function onSubmit(data: z.infer<typeof formSchema>) {
-    const res = await Login(data);
+    const res = await Register(data);
     if (res.error) {
       toast.error(res.error);
     } else {
       setUser(res.data);
-      toast.success(`Bienvenido de vuelta, ${res.data?.username}`);
+      toast.success(`Te has registrado exitosamente, ${res.data?.username}`);
+      navigate('/cuenta');
     }
+    console.log(res);
   }
+
   return (
     <Card className='w-full sm:max-w-md rounded h-full'>
       <CardHeader>
-        <CardTitle>Iniciar Sesión</CardTitle>
+        <CardTitle>Registrarse</CardTitle>
         <CardDescription>
-          Guarda recetas, crea las tuyas propias y administra tu perfil al
-          iniciar sesion.
+          Guarda recetas, crea las tuyas propias y administra tu perfil en la
+          plataforma.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -56,6 +79,37 @@ export function LoginForm() {
           id='form-rhf-input'
           onSubmit={form.handleSubmit(onSubmit)}
         >
+          <FieldGroup>
+            <Controller
+              name='username'
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor='form-rhf-input-username'>
+                    Nombre de usuario
+                  </FieldLabel>
+                  <Input
+                    {...field}
+                    name='username'
+                    id='form-rhf-input-username'
+                    aria-invalid={fieldState.invalid}
+                    placeholder='Juan Bautista'
+                    autoComplete='username'
+                    required
+                    aria-required
+                    min={4}
+                    max={30}
+                  />
+                  {fieldState.invalid && (
+                    <FieldError
+                      errors={[fieldState.error]}
+                      className='text-destructive'
+                    />
+                  )}
+                </Field>
+              )}
+            />
+          </FieldGroup>
           <FieldGroup>
             <Controller
               name='email'
@@ -71,6 +125,7 @@ export function LoginForm() {
                     autoComplete='email'
                     required
                     aria-required
+                    type='email'
                   />
                   {fieldState.invalid && (
                     <FieldError
@@ -107,6 +162,30 @@ export function LoginForm() {
               )}
             />
           </FieldGroup>
+          <FieldGroup>
+            <Controller
+              name='confirm_password'
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor='form-rhf-input-confirm-password'>
+                    Confirmar contraseña
+                  </FieldLabel>
+                  <Input
+                    {...field}
+                    id='form-rhf-input-password'
+                    aria-invalid={fieldState.invalid}
+                    placeholder='*******'
+                    required
+                    aria-required
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+          </FieldGroup>
         </form>
       </CardContent>
       <CardFooter>
@@ -123,9 +202,9 @@ export function LoginForm() {
             type='button'
             form='form-rhf-input'
             className='rounded w-full pt-4 text-xs'
-            onClick={() => navigate('/register')}
+            onClick={() => navigate('/login')}
           >
-            No tienes cuenta? Registrate
+            Ya eres usuario? Inicia Sesion
           </Button>
         </div>
       </CardFooter>

@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import { cn } from '../../lib/utils';
+import { motion } from 'motion/react';
 
 function Card({
   className,
@@ -8,7 +9,10 @@ function Card({
   ...props
 }: React.ComponentProps<'div'> & { size?: 'default' | 'sm' }) {
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
       data-slot='card'
       data-size={size}
       className={cn(
