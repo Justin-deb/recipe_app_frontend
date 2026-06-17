@@ -173,7 +173,7 @@ export default function RecipeDetailPage() {
       </motion.p>
 
       {/* Comments */}
-      <div className='flex flex-col p-4 bg-accent rounded text-accent-foreground mt-2 gap-2 rounded w-full mb-4'>
+      <div className='flex flex-col p-4 bg-accent rounded text-accent-foreground mt-2 gap-2 w-full mb-4'>
         {recipe?.comments.length === 0 ?
           'No hay comentarios, se el primero'
         : recipe?.comments.map((comment) => (
@@ -194,7 +194,7 @@ export default function RecipeDetailPage() {
           ))
         }
       </div>
-      <CreateCommentForm recipeId={id || ''} />
+      <CreateCommentForm recipeId={id || recipe?.id} />
     </div>
   );
 }
