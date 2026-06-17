@@ -4,7 +4,7 @@ import type { Recipe } from '../types/types';
 import { getRecipes } from '../services/recipe-service';
 import { Spinner } from '../components/ui/spinner';
 import { RecipeCard } from '../components/recipe-card';
-import { AnimatePresence } from 'motion/react';
+import { AnimatePresence, motion } from 'motion/react';
 
 export default function RecipesPage() {
   const [recipes, setRecipes] = useState<Recipe[]>(
@@ -46,12 +46,15 @@ export default function RecipesPage() {
         autoFocus
         onChange={(e) => setSearch(e.target.value)}
       />
-      <AnimatePresence>
+      <AnimatePresence
+        presenceAffectsLayout
+        mode='popLayout'
+      >
         <section className='gap-4 grid grid-cols-1 sm:gap-6 sm:grid lg:grid-cols-3 xl:grid-cols-4 min-h-[80dvh]'>
           {isLoading ?
-            <div className='flex flex-1 justify-center items-center'>
+            <motion.div className='flex flex-1 justify-center items-center'>
               <Spinner className='self-center size-8' />
-            </div>
+            </motion.div>
           : error && !recipes ?
             <h1>Hubo un error: ${error}</h1>
           : recipes
