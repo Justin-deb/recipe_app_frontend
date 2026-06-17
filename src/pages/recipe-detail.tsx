@@ -109,7 +109,13 @@ export default function RecipeDetailPage() {
         : recipe?.comments.map((comment) => (
             <div>
               <h1>{comment.title}</h1>
-              <p>{comment.description}</p>
+              <p
+                style={{
+                  viewTransitionName: `recipe-description-${id}`
+                }}
+              >
+                {comment.description}
+              </p>
               <h4>{comment.username}</h4>
             </div>
           ))

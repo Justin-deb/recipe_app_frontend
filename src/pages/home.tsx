@@ -40,7 +40,7 @@ export default function Home() {
           formas de disfrutar de lo que mas te gusta en la cocina!
         </p>
       </div>
-      <section className='flex flex-col gap-4 sm:gap-6 sm:grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 min-h-[80dvh]'>
+      <section className='gap-4 grid grid-cols-1 sm:gap-6 sm:grid lg:grid-cols-3 xl:grid-cols-4 min-h-[80dvh]'>
         {isLoading ?
           <div className='flex flex-1 justify-center items-center'>
             <Spinner className='self-center size-8' />
@@ -50,7 +50,7 @@ export default function Home() {
         : recipes.map((recipe) => (
             <RecipeCard
               recipe={recipe}
-              key={recipe.name}
+              key={recipe.id}
             />
           ))
         }

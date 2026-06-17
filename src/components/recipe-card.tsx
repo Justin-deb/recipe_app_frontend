@@ -55,12 +55,17 @@ export function RecipeCard({ recipe }: RecipeProps) {
         {/* Rating */}
         <h3
           className='text-primary/60 text-xs pb-2'
-          style={{ viewTransitionName: `recipe-description-${recipe.id}` }}
+          style={{ viewTransitionName: `recipe-rating-${recipe.id}` }}
         >
           Los usuarios votaron: 5/10
         </h3>
         {/* Description */}
-        <p className='text-card-foreground/50 leading-5 line-clamp-2 text-sm'>
+        <p
+          className='text-card-foreground/50 leading-5 line-clamp-2 text-sm'
+          style={{
+            viewTransitionName: `recipe-description-${recipe.id}`
+          }}
+        >
           {recipe.description}
         </p>
         <div className='flex items-center justify-end pt-4 gap-2'>

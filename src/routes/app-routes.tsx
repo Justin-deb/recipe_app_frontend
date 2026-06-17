@@ -12,6 +12,7 @@ import RecipesPage from '../pages/recipes';
 import ProfilePage from '../pages/profile';
 import RegisterPage from '../pages/register';
 import RecipeDetailPage from '../pages/recipe-detail';
+import CreateRecipePage from '../pages/create-recipe';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -43,7 +44,7 @@ const router = createBrowserRouter(
       <Route element={<PrivateLayout />}>
         <Route
           path='/crear'
-          element={<h1>Crear</h1>}
+          element={<CreateRecipePage />}
         />
         <Route
           path='/favoritos'

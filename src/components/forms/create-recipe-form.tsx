@@ -19,10 +19,12 @@ import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 
 import { CreateRecipe } from '../../services/recipe-service';
-import { getCountries, getIngredients } from '../../services/data-service';
 import type { Country, Ingredient } from '../../types/types';
+import { getCountries } from '../../services/country-service';
+import { getIngredients } from '../../services/ingredient-service';
+import { useLocalStorage } from '@uidotdev/usehooks';
+import type { UserSession } from '../../types/user-session';
 
-// 1. Definimos el esquema de validación con Zod
 const formSchema = z.object({
   name: z
     .string()
@@ -33,19 +35,16 @@ const formSchema = z.object({
     .min(20, 'Añade una sinopsis y las instrucciones detalladas'),
   photoUrl: z.string().url('Debe ser una URL válida de imagen'),
   countryId: z.string().min(1, 'Debes seleccionar un país'),
-  // Asumimos que los ingredientes son un array de IDs (si es un multi-select)
-  // o un solo string si es un select simple. Aquí lo dejamos como array para multi-select.
   ingredients: z.array(z.string()).min(1, 'Selecciona al menos un ingrediente')
 });
 
 export function CreateRecipeForm() {
   const navigate = useNavigate();
 
-  // Estados para almacenar los datos de los selectores
+  const [user] = useLocalStorage<UserSession | null>('user_session', null);
   const [countries, setCountries] = useState<Country[]>([]);
   const [ingredientsList, setIngredientsList] = useState<Ingredient[]>([]);
 
-  // 2. Inicializamos el formulario
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -58,42 +57,58 @@ export function CreateRecipeForm() {
     mode: 'onBlur'
   });
 
-  // 3. Obtenemos los países e ingredientes al montar el componente
   useEffect(() => {
     async function fetchData() {
-      try {
-        const [countriesData, ingredientsData] = await Promise.all([
-          getCountries(),
-          getIngredients()
-        ]);
-        setCountries(countriesData);
-        setIngredientsList(ingredientsData);
-      } catch (error) {
-        toast.error('Error al cargar los datos de países e ingredientes');
-      }
+      const [countriesData, ingredientsData] = await Promise.all([
+        getCountries(),
+        getIngredients()
+      ]);
+      setCountries(countriesData.data ?? []);
+      setIngredientsList(ingredientsData.data ?? []);
     }
     fetchData();
   }, []);
 
-  // 4. Función para manejar el envío
   async function onSubmit(data: z.infer<typeof formSchema>) {
-    const res = await CreateRecipe(data);
+    if (!user) {
+      toast.error('Debes iniciar sesión para crear una receta');
+      return;
+    }
+
+    const res = await CreateRecipe({ ...data, userId: user.userId });
     if (res.error) {
       toast.error(res.error);
     } else {
       toast.success(`Receta "${data.name}" creada exitosamente`);
-      navigate('/recetas'); // O la ruta a la que desees redirigir
+      navigate('/recetas');
     }
   }
 
+  if (!user) {
+    return (
+      <Card className='w-full rounded h-full mx-auto'>
+        <CardHeader>
+          <CardTitle>Crear Nueva Receta</CardTitle>
+          <CardDescription>
+            Debes iniciar sesión para crear una receta.
+          </CardDescription>
+        </CardHeader>
+        <CardFooter>
+          <Button
+            className='rounded'
+            onClick={() => navigate('/login')}
+          >
+            Iniciar sesión
+          </Button>
+        </CardFooter>
+      </Card>
+    );
+  }
+
   return (
-    <Card className='w-full sm:max-w-2xl rounded h-full mx-auto'>
+    <Card className='w-full rounded h-full mx-auto'>
       <CardHeader>
         <CardTitle>Crear Nueva Receta</CardTitle>
-        <CardDescription>
-          Comparte tu creación con el mundo. Añade una sinopsis, los pasos y
-          selecciona los ingredientes.
-        </CardDescription>
       </CardHeader>
       <CardContent>
         <form
@@ -238,7 +253,6 @@ export function CreateRecipeForm() {
                       multiple
                       id='select-ingredients'
                       className='flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 min-h-[80px]'
-                      // Manejo custom para el multi-select nativo en RHF
                       onChange={(e) => {
                         const values = Array.from(
                           e.target.selectedOptions,

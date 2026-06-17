@@ -14,7 +14,7 @@ export async function Login({
   if (!email || !password)
     return { data: null, error: 'Se requieren email y contraseña' };
 
-  const res = await fetch(`${API_URL}/login`, {
+  const res = await fetch(`${API_URL}/user/login`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -26,7 +26,7 @@ export async function Login({
     const errorData = await res.json();
     return {
       data: null,
-      error: errorData.message || 'Error al iniciar sesión'
+      error: errorData || 'Error al iniciar sesión'
     };
   }
 
