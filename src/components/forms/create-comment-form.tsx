@@ -77,7 +77,7 @@ export function CreateCommentForm({
   }
 
   return (
-    <Card className='w-full rounded h-max'>
+    <Card className='w-full rounded'>
       <CardHeader>
         <CardTitle>Comentar</CardTitle>
       </CardHeader>
