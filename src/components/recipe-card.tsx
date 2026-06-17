@@ -4,40 +4,61 @@ import { Button } from './ui/button';
 import { useNavigate } from 'react-router';
 import { useState } from 'react';
 import noImage from '/no-image.jpg';
+import { motion } from 'motion/react';
 
 interface RecipeProps {
   recipe: Recipe;
 }
 export function RecipeCard({ recipe }: RecipeProps) {
   const navigate = useNavigate();
-  const [imageURL, setImageURL] = useState<string>(recipe.photoUrl || noImage);
+  const [imageURL, setImageURL] = useState<string>(
+    recipe.photoUrl || noImage
+  );
 
   const navigateToDetail = () => {
-    navigate('/recetas/' + recipe.id, { viewTransition: true });
+    navigate('/recetas/' + recipe.id, {
+      viewTransition: true,
+      preventScrollReset: true
+    });
   };
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
       className='bg-card shadow-xl shadow-primary rounded'
       key={recipe.id}
     >
       <div className='relative'>
         {/* Flag container */}
-        <div className='absolute flex z-10 w-full justify-between p-2 h-14'>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className='absolute flex z-10 w-full justify-between p-2 h-14'
+        >
           {/* Flag image */}
           <img
             src={recipe?.countryFlag}
             alt={`Recipe from ${recipe?.countryName}`}
-            style={{ viewTransitionName: `recipe-flag-image-${recipe.id}` }}
+            style={{
+              viewTransitionName: `recipe-flag-image-${recipe.id}`
+            }}
             className='rounded-full shadow-xl max-w-[40px] object-center object-cover'
           />
-        </div>
+        </motion.div>
 
         {/* Image */}
-        <img
+        <motion.img
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
           onClick={navigateToDetail}
           src={imageURL}
-          style={{ viewTransitionName: `recipe-image-${recipe.id}` }}
+          style={{
+            viewTransitionName: `recipe-image-${recipe.id}`
+          }}
           className='w-full h-full max-h-[200px] min-h-[200px] object-cover rounded'
           onError={() => setImageURL(noImage)}
         />
@@ -47,7 +68,9 @@ export function RecipeCard({ recipe }: RecipeProps) {
         {/* Title */}
         <h1
           className='pb-0 text-xl font-bold text-primary'
-          style={{ viewTransitionName: `recipe-name-${recipe.id}` }}
+          style={{
+            viewTransitionName: `recipe-name-${recipe.id}`
+          }}
         >
           {recipe.name}
         </h1>
@@ -55,7 +78,9 @@ export function RecipeCard({ recipe }: RecipeProps) {
         {/* Rating */}
         <h3
           className='text-primary/60 text-xs pb-2'
-          style={{ viewTransitionName: `recipe-rating-${recipe.id}` }}
+          style={{
+            viewTransitionName: `recipe-rating-${recipe.id}`
+          }}
         >
           Los usuarios votaron: 5/10
         </h3>
@@ -88,6 +113,6 @@ export function RecipeCard({ recipe }: RecipeProps) {
           </Button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

@@ -34,26 +34,14 @@ import { useLocalStorage } from '@uidotdev/usehooks';
 import type { UserSession } from '../../types/user-session';
 
 const formSchema = z.object({
-  name: z
+  title: z
     .string()
-    .min(3, 'El nombre debe tener al menos 3 caracteres')
-    .max(50, 'El nombre no puede exceder 50 caracteres'),
-  description: z
-    .string()
-    .min(
-      20,
-      'Añade una sinopsis y las instrucciones detalladas'
-    ),
-  photoUrl: z
-    .string()
-    .url('Debe ser una URL válida de imagen'),
-  countryId: z.string().min(1, 'Debes seleccionar un país'),
-  ingredients: z
-    .array(z.string())
-    .min(1, 'Selecciona al menos un ingrediente')
+    .min(3, 'El titulo debe tener 3 caracteres mínimo')
+    .max(50, 'El titulo no puede exceder 50 caracteres'),
+  description: z.string().min(20, 'Minimo 20 caracteres')
 });
 
-export function CreateRecipeForm() {
+export function CreateCommentForm() {
   const navigate = useNavigate();
 
   const [user] = useLocalStorage<UserSession | null>(
@@ -67,11 +55,8 @@ export function CreateRecipeForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: '',
-      description: '',
-      photoUrl: '',
-      countryId: '',
-      ingredients: []
+      title: '',
+      description: ''
     },
     mode: 'onBlur'
   });
@@ -94,7 +79,7 @@ export function CreateRecipeForm() {
   ) {
     if (!user) {
       toast.error(
-        'Debes iniciar sesión para crear una receta'
+        'Debes iniciar sesión para comentar una receta'
       );
       return;
     }

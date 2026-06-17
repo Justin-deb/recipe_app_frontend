@@ -5,9 +5,12 @@ import { RecipeCard } from '../components/recipe-card';
 import { Spinner } from '../components/ui/spinner';
 
 export default function Home() {
-  const [recipes, setRecipes] = useState<Recipe[]>([] as Recipe[]);
+  const [recipes, setRecipes] = useState<Recipe[]>(
+    [] as Recipe[]
+  );
   const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] =
+    useState<boolean>(false);
 
   useEffect(() => {
     const fetchRecipes = async () => {
@@ -36,8 +39,9 @@ export default function Home() {
           Recetas destacadas
         </h1>
         <p className='leading-4.5 text-foreground/50 text-sm font-light'>
-          Descubre las recetas mas votadas por los usuarios y encuentra nuevas
-          formas de disfrutar de lo que mas te gusta en la cocina!
+          Descubre las recetas mas votadas por los usuarios
+          y encuentra nuevas formas de disfrutar de lo que
+          mas te gusta en la cocina!
         </p>
       </div>
       <section className='gap-4 grid grid-cols-1 sm:gap-6 sm:grid lg:grid-cols-3 xl:grid-cols-4 min-h-[80dvh]'>
@@ -48,10 +52,7 @@ export default function Home() {
         : error && !recipes ?
           <h1>Hubo un error: ${error}</h1>
         : recipes.map((recipe) => (
-            <RecipeCard
-              recipe={recipe}
-              key={recipe.id}
-            />
+            <RecipeCard recipe={recipe} key={recipe.id} />
           ))
         }
       </section>

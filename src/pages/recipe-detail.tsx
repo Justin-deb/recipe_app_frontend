@@ -5,15 +5,14 @@ import { getRecipeById } from '../services/recipe-service';
 import { Button } from '../components/ui/button';
 import { ArrowLeftIcon, HeartIcon } from 'lucide-react';
 import noImage from '/no-image.jpg';
-import { type Comment } from '../types/types';
 import { Input } from '../components/ui/input';
+import { motion } from 'motion/react';
 
 export default function RecipeDetailPage() {
   const { id } = useParams();
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const navigate = useNavigate();
   const [imageURL, setImageURL] = useState<string>(noImage);
-  const [comments, setComments] = useState<Comment[]>([] as Comment[]);
 
   useEffect(() => {
     const fetchRecipe = async () => {
@@ -24,13 +23,15 @@ export default function RecipeDetailPage() {
       const res = await getRecipeById(id!);
       setRecipe(res.error ? null : res.data);
       setImageURL(res.data?.photoUrl || noImage);
-      setComments(res.data?.comments || []);
     };
     fetchRecipe();
   }, [id]);
 
   const handleGoBack = () => {
-    navigate(-1, { viewTransition: true });
+    navigate(-1, {
+      viewTransition: true,
+      preventScrollReset: true
+    });
   };
 
   return (
@@ -49,7 +50,9 @@ export default function RecipeDetailPage() {
           {/* Flag image */}
           <img
             src={recipe?.countryFlag}
-            style={{ viewTransitionName: `recipe-flag-image-${id}` }}
+            style={{
+              viewTransitionName: `recipe-flag-image-${id}`
+            }}
             className='rounded-full shadow-xl max-w-[40px] object-cover'
           />
 
@@ -69,7 +72,9 @@ export default function RecipeDetailPage() {
         <img
           className='w-full h-full object-cover rounded max-h-[300px]'
           src={imageURL}
-          style={{ viewTransitionName: `recipe-image-${id}` }}
+          style={{
+            viewTransitionName: `recipe-image-${id}`
+          }}
           onError={() => setImageURL(noImage)}
         />
       </div>
@@ -87,20 +92,31 @@ export default function RecipeDetailPage() {
       <div className='flex p-2 justify-between'>
         <h3
           className='opacity-40 text-sm pb-2 text-center'
-          style={{ viewTransitionName: `recipe-favorites-${id}` }}
+          style={{
+            viewTransitionName: `recipe-favorites-${id}`
+          }}
         >
           Guardado 24 veces
         </h3>
         <h3
           className='text-primary/80 text-sm pb-2 text-center underline'
-          style={{ viewTransitionName: `recipe-author-${id}` }}
+          style={{
+            viewTransitionName: `recipe-author-${id}`
+          }}
         >
-          {recipe?.username && `Subido por ${recipe?.username}`}
+          {recipe?.username &&
+            `Subido por ${recipe?.username}`}
         </h3>
       </div>
 
       {/* Description */}
-      <p className='text-lg pt-2 opacity-90'>{recipe?.description}</p>
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className='text-lg pt-2 opacity-90'
+      >
+        {recipe?.description}
+      </motion.p>
 
       {/* Comments */}
       <div className='flex p-4 bg-accent rounded text-accent-foreground mt-2'>
@@ -121,8 +137,10 @@ export default function RecipeDetailPage() {
           ))
         }
       </div>
-      <form className='pt-2'>
-        <h1>Comentar</h1>
+      <form className='p-4 bg-card mt-4 rounded h-max'>
+        <h1 className='text-xl font-bolder text-primary'>
+          Comentar
+        </h1>
         <Input />
       </form>
     </div>

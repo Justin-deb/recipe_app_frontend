@@ -1,6 +1,8 @@
 import { API_URL } from '../lib/constants';
 import type { DataResponse } from '../types/data-response';
-import type { Recipe } from '../types/types';
+import type { Recipe, User } from '../types/types';
+import type { UserSession } from '../types/user-session';
+import { getCommentsByRecipe } from './comment-service';
 
 export type GetRecipesResponse = DataResponse<Recipe[]>;
 
@@ -41,9 +43,17 @@ export async function getRecipeById(
     };
   }
 
+  let recipe: Recipe = await res.json();
+
+  const comments = await getCommentsByRecipe(
+    recipe.id.toString()
+  );
+  if (!comments.error) {
+    recipe = { ...recipe, comments: comments.data! };
+  }
   return {
     error: null,
-    data: await res.json()
+    data: recipe
   };
 }
 
@@ -54,19 +64,40 @@ export async function CreateRecipe({
   photoUrl,
   countryId,
   ingredients,
-  userId
+  currentUserSession
 }: {
   name: string;
   description: string;
   photoUrl: string;
   countryId: string;
   ingredients: string[];
-  userId: number;
+  currentUserSession: UserSession;
 }): Promise<CreateRecipeResponse> {
-  if (!userId) {
+  if (!currentUserSession) {
     return {
       data: null,
       error: 'Usuario no autenticado'
+    };
+  }
+
+  const usersRes = await fetch(`${API_URL}/user`);
+  if (!usersRes.ok) {
+    return {
+      data: null,
+      error: 'Error al crear la receta'
+    };
+  }
+
+  const users: User[] = await usersRes.json();
+
+  const currentUser: User | undefined = users.find(
+    (user: User) => currentUserSession.email === user.email
+  );
+
+  if (!currentUser) {
+    return {
+      data: null,
+      error: 'Error al crear la receta'
     };
   }
 
@@ -79,7 +110,7 @@ export async function CreateRecipe({
       photoUrl,
       countryId,
       ingredients,
-      userId
+      userId: currentUser.id
     })
   });
 
