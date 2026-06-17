@@ -194,7 +194,7 @@ export default function RecipeDetailPage() {
           ))
         }
       </div>
-      <CreateCommentForm recipeId={id || recipe?.id} />
+      <CreateCommentForm recipeId={id || ''} />
     </div>
   );
 }
