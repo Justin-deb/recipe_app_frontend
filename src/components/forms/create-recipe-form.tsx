@@ -113,35 +113,14 @@ export function CreateRecipeForm() {
     }
   }
 
-  if (!user) {
-    return (
-      <Card className='w-full rounded h-full mx-auto'>
-        <CardHeader>
-          <CardTitle>Crear Nueva Receta</CardTitle>
-          <CardDescription>
-            Debes iniciar sesión para crear una receta.
-          </CardDescription>
-        </CardHeader>
-        <CardFooter>
-          <Button
-            className='rounded'
-            onClick={() => navigate('/login')}
-          >
-            Iniciar sesión
-          </Button>
-        </CardFooter>
-      </Card>
-    );
-  }
-
   return (
-    <Card className='w-full rounded h-full mx-auto'>
+    <Card className='w-full rounded h-full pt-8'>
       <CardHeader>
         <CardTitle>Crear Nueva Receta</CardTitle>
       </CardHeader>
       <CardContent>
         <form
-          className='flex gap-5 flex-col'
+          className='flex gap-5 flex-col w-full'
           id='form-create-recipe'
           onSubmit={form.handleSubmit(onSubmit)}
         >
@@ -317,17 +296,9 @@ export function CreateRecipeForm() {
       </CardContent>
       <CardFooter className='flex justify-between'>
         <Button
-          variant='outline'
-          type='button'
-          onClick={() => navigate(-1)}
-          className='rounded'
-        >
-          Cancelar
-        </Button>
-        <Button
           type='submit'
           form='form-create-recipe'
-          className='rounded'
+          className='rounded w-full'
         >
           Publicar Receta
         </Button>

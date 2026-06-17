@@ -27,7 +27,7 @@ export function RecipeCard({ recipe }: RecipeProps) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className='bg-card shadow-xl shadow-primary rounded'
+      className='bg-card shadow-xl shadow-primary rounded min-h-[250px]'
       key={recipe.id}
     >
       <div className='relative'>
@@ -64,7 +64,7 @@ export function RecipeCard({ recipe }: RecipeProps) {
         />
       </div>
 
-      <div className='px-4 pt-3 pb-4'>
+      <div className='px-4 pt-3 pb-4 flex flex-col h-1/2'>
         {/* Title */}
         <h1
           className='pb-0 text-xl font-bold text-primary'
@@ -93,7 +93,7 @@ export function RecipeCard({ recipe }: RecipeProps) {
         >
           {recipe.description}
         </p>
-        <div className='flex items-center justify-end pt-4 gap-2'>
+        <div className='flex items-end justify-end pt-4 gap-2 flex-1 pb-2'>
           <Button
             className='rounded flex-1'
             size={'icon-lg'}

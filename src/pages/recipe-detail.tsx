@@ -7,12 +7,60 @@ import { ArrowLeftIcon, HeartIcon } from 'lucide-react';
 import noImage from '/no-image.jpg';
 import { Input } from '../components/ui/input';
 import { motion } from 'motion/react';
+import { CreateCommentForm } from '../components/forms/create-comment-form';
+import { useLocalStorage } from '@uidotdev/usehooks';
+import type { UserSession } from '../types/user-session';
+import {
+  AddFavorite,
+  RemoveFavorite
+} from '../services/favorite-service';
+import { toast } from 'sonner';
 
 export default function RecipeDetailPage() {
   const { id } = useParams();
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const navigate = useNavigate();
   const [imageURL, setImageURL] = useState<string>(noImage);
+  const [favorites, setFavorites] =
+    useLocalStorage<Recipe[]>('favorites');
+  const [user] = useLocalStorage<UserSession | null>(
+    'user_session'
+  );
+
+  const isFavorite = favorites?.some(
+    (favorite) => favorite.id === recipe?.id
+  );
+
+  const handleAddFavorite = async () => {
+    if (!recipe) return;
+
+    const res = await AddFavorite(recipe.id, user?.userId);
+    if (res.error) {
+      console.error(res.error);
+      toast.error(res.error);
+    } else {
+      toast.info('Receta agregada a favoritos');
+      setFavorites([...(favorites || []), recipe]);
+    }
+  };
+
+  const handleRemoveFavorite = async () => {
+    if (!recipe) return;
+    const res = await RemoveFavorite(
+      recipe.id,
+      user?.userId
+    );
+    if (res.error) {
+      console.error(res.error);
+    } else {
+      toast.info('Receta eliminada de favoritos');
+      setFavorites(
+        favorites?.filter(
+          (favorite) => favorite.id !== recipe.id
+        )
+      );
+    }
+  };
 
   useEffect(() => {
     const fetchRecipe = async () => {
@@ -62,9 +110,18 @@ export default function RecipeDetailPage() {
             style={{
               viewTransitionName: `recipe-favorite-button-${id}`
             }}
+            onClick={
+              isFavorite ?
+                handleRemoveFavorite
+              : handleAddFavorite
+            }
           >
             <HeartIcon />
-            <span>Añadir a Favoritos</span>
+            <span>
+              {isFavorite ?
+                'Quitar de favoritos'
+              : 'Agregar a favoritos'}
+            </span>
           </Button>
         </div>
 
@@ -119,30 +176,28 @@ export default function RecipeDetailPage() {
       </motion.p>
 
       {/* Comments */}
-      <div className='flex p-4 bg-accent rounded text-accent-foreground mt-2'>
+      <div className='flex flex-col p-4 bg-accent rounded text-accent-foreground mt-2 gap-2 rounded w-full mb-4'>
         {recipe?.comments.length === 0 ?
           'No hay comentarios, se el primero'
         : recipe?.comments.map((comment) => (
-            <div>
-              <h1>{comment.title}</h1>
-              <p
-                style={{
-                  viewTransitionName: `recipe-description-${id}`
-                }}
-              >
+            <div
+              className='flex flex-col gap-0 w-full'
+              key={comment.id}
+            >
+              <h1 className='text-primary font-extrabold text-md'>
+                {comment.title}
+              </h1>
+              <h4 className='text-xs pb-1 text-accent-foreground/80'>
+                Autor: {comment.username}
+              </h4>
+              <p className='text-md break-all'>
                 {comment.description}
               </p>
-              <h4>{comment.username}</h4>
             </div>
           ))
         }
       </div>
-      <form className='p-4 bg-card mt-4 rounded h-max'>
-        <h1 className='text-xl font-bolder text-primary'>
-          Comentar
-        </h1>
-        <Input />
-      </form>
+      <CreateCommentForm recipeId={id || ''} />
     </div>
   );
 }

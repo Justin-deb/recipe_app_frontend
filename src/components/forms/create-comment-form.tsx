@@ -32,6 +32,7 @@ import { getCountries } from '../../services/country-service';
 import { getIngredients } from '../../services/ingredient-service';
 import { useLocalStorage } from '@uidotdev/usehooks';
 import type { UserSession } from '../../types/user-session';
+import { CreateComment } from '../../services/comment-service';
 
 const formSchema = z.object({
   title: z
@@ -41,16 +42,17 @@ const formSchema = z.object({
   description: z.string().min(20, 'Minimo 20 caracteres')
 });
 
-export function CreateCommentForm() {
+export interface CreateCommentFormProps {
+  recipeId: string;
+}
+export function CreateCommentForm({
+  recipeId
+}: CreateCommentFormProps) {
   const navigate = useNavigate();
 
   const [user] = useLocalStorage<UserSession | null>(
     'user_session'
   );
-  const [countries, setCountries] = useState<Country[]>([]);
-  const [ingredientsList, setIngredientsList] = useState<
-    Ingredient[]
-  >([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -60,19 +62,6 @@ export function CreateCommentForm() {
     },
     mode: 'onBlur'
   });
-
-  useEffect(() => {
-    async function fetchData() {
-      const [countriesData, ingredientsData] =
-        await Promise.all([
-          getCountries(),
-          getIngredients()
-        ]);
-      setCountries(countriesData.data ?? []);
-      setIngredientsList(ingredientsData.data ?? []);
-    }
-    fetchData();
-  }, []);
 
   async function onSubmit(
     data: z.infer<typeof formSchema>
@@ -84,45 +73,25 @@ export function CreateCommentForm() {
       return;
     }
 
-    const res = await CreateRecipe({
-      ...data,
+    const res = await CreateComment({
+      title: data.title,
+      description: data.description,
+      recipeId: recipeId,
       currentUserSession: user
     });
     if (res.error) {
-      toast.error(res.error);
+      //   toast.error(res.error);
+      console.log(res);
     } else {
-      toast.success(
-        `Receta "${data.name}" creada exitosamente`
-      );
-      navigate('/recetas');
+      toast.success(`Comentario publicado`);
+      window.location.reload();
     }
   }
 
-  if (!user) {
-    return (
-      <Card className='w-full rounded h-full mx-auto'>
-        <CardHeader>
-          <CardTitle>Crear Nueva Receta</CardTitle>
-          <CardDescription>
-            Debes iniciar sesión para crear una receta.
-          </CardDescription>
-        </CardHeader>
-        <CardFooter>
-          <Button
-            className='rounded'
-            onClick={() => navigate('/login')}
-          >
-            Iniciar sesión
-          </Button>
-        </CardFooter>
-      </Card>
-    );
-  }
-
   return (
-    <Card className='w-full rounded h-full mx-auto'>
+    <Card className='w-full rounded h-max'>
       <CardHeader>
-        <CardTitle>Crear Nueva Receta</CardTitle>
+        <CardTitle>Comentar</CardTitle>
       </CardHeader>
       <CardContent>
         <form
@@ -133,18 +102,18 @@ export function CreateCommentForm() {
           {/* Nombre de la Receta */}
           <FieldGroup>
             <Controller
-              name='name'
+              name='title'
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor='input-name'>
-                    Nombre de la receta
+                  <FieldLabel htmlFor='input-title'>
+                    Titulo
                   </FieldLabel>
                   <Input
                     {...field}
-                    id='input-name'
+                    id='input-title'
                     aria-invalid={fieldState.invalid}
-                    placeholder='Ej. Gallo Pinto Tradicional'
+                    placeholder='Mi comentario'
                     required
                   />
                   {fieldState.invalid && (
@@ -158,7 +127,7 @@ export function CreateCommentForm() {
             />
           </FieldGroup>
 
-          {/* Descripción (Sinopsis e Instrucciones) */}
+          {/* Descripción */}
           <FieldGroup>
             <Controller
               name='description'
@@ -166,13 +135,13 @@ export function CreateCommentForm() {
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor='input-description'>
-                    Descripción e Instrucciones
+                    Descripción
                   </FieldLabel>
                   <Textarea
                     {...field}
                     id='input-description'
                     aria-invalid={fieldState.invalid}
-                    placeholder='Escribe una breve sinopsis y luego los pasos a seguir...'
+                    placeholder='Comenta que te parecio, si fue dificil o que tal la experiencia'
                     rows={6}
                     required
                   />
@@ -186,135 +155,15 @@ export function CreateCommentForm() {
               )}
             />
           </FieldGroup>
-
-          {/* URL de Imagen */}
-          <FieldGroup>
-            <Controller
-              name='photoUrl'
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor='input-image'>
-                    URL de la Imagen
-                  </FieldLabel>
-                  <Input
-                    {...field}
-                    id='input-image'
-                    type='url'
-                    aria-invalid={fieldState.invalid}
-                    placeholder='https://ejemplo.com/imagen.jpg'
-                    required
-                  />
-                  {fieldState.invalid && (
-                    <FieldError
-                      errors={[fieldState.error]}
-                      className='text-destructive'
-                    />
-                  )}
-                </Field>
-              )}
-            />
-          </FieldGroup>
-
-          <div className='grid grid-cols-1 sm:grid-cols-2 gap-5'>
-            {/* Selector de País */}
-            <FieldGroup>
-              <Controller
-                name='countryId'
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor='select-country'>
-                      País de Origen
-                    </FieldLabel>
-                    <select
-                      {...field}
-                      id='select-country'
-                      className='flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
-                    >
-                      <option value=''>
-                        Selecciona un país...
-                      </option>
-                      {countries.map((c) => (
-                        <option
-                          key={c.id}
-                          value={c.id.toString()}
-                        >
-                          {c.name}
-                        </option>
-                      ))}
-                    </select>
-                    {fieldState.invalid && (
-                      <FieldError
-                        errors={[fieldState.error]}
-                        className='text-destructive'
-                      />
-                    )}
-                  </Field>
-                )}
-              />
-            </FieldGroup>
-
-            {/* Selector de Ingredientes (Múltiple) */}
-            <FieldGroup>
-              <Controller
-                name='ingredients'
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor='select-ingredients'>
-                      Ingredientes
-                    </FieldLabel>
-                    <select
-                      multiple
-                      id='select-ingredients'
-                      className='flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 min-h-[80px]'
-                      onChange={(e) => {
-                        const values = Array.from(
-                          e.target.selectedOptions,
-                          (option) => option.value
-                        );
-                        field.onChange(values);
-                      }}
-                      value={field.value}
-                    >
-                      {ingredientsList.map((ing) => (
-                        <option
-                          key={ing.id}
-                          value={ing.id.toString()}
-                        >
-                          {ing.name}
-                        </option>
-                      ))}
-                    </select>
-                    {fieldState.invalid && (
-                      <FieldError
-                        errors={[fieldState.error]}
-                        className='text-destructive'
-                      />
-                    )}
-                  </Field>
-                )}
-              />
-            </FieldGroup>
-          </div>
         </form>
       </CardContent>
-      <CardFooter className='flex justify-between'>
-        <Button
-          variant='outline'
-          type='button'
-          onClick={() => navigate(-1)}
-          className='rounded'
-        >
-          Cancelar
-        </Button>
+      <CardFooter>
         <Button
           type='submit'
           form='form-create-recipe'
-          className='rounded'
+          className='rounded w-full'
         >
-          Publicar Receta
+          Comentar
         </Button>
       </CardFooter>
     </Card>

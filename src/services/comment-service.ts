@@ -29,12 +29,13 @@ export async function getCommentsByRecipe(
 
 export type CreateCommentResponse = DataResponse<Comment>;
 export async function CreateComment({
-  comment,
+  title,
+  description,
   recipeId,
   currentUserSession
 }: {
   title: string;
-  comment: string;
+  description: string;
   recipeId: string;
   currentUserSession: UserSession;
 }): Promise<CreateCommentResponse> {
@@ -64,9 +65,11 @@ export async function CreateComment({
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      comment,
+      title,
+      description,
       recipeId,
-      userId: user.id
+      userId: user.id,
+      username: user.username
     })
   });
 
