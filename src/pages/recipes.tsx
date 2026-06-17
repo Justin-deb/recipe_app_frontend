@@ -40,7 +40,7 @@ export default function RecipesPage() {
         justo lo que quieres cocinar para tu disfrute
       </p>
       <Input
-        className='w-full bg-secondary placeholder:text-secondary-foreground/40 border-border shadow rounded mt-1 text-secondary-foreground p-4 focus:border-primary'
+        className='w-full bg-secondary placeholder:text-secondary-foreground/40 border-border shadow rounded mt-1 text-secondary-foreground p-4 focus:border-primary mb-4'
         inputMode='text'
         placeholder='Fideos con pollo...'
         autoFocus

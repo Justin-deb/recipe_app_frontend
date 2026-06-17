@@ -5,7 +5,6 @@ import { getRecipeById } from '../services/recipe-service';
 import { Button } from '../components/ui/button';
 import { ArrowLeftIcon, HeartIcon } from 'lucide-react';
 import noImage from '/no-image.jpg';
-import { Input } from '../components/ui/input';
 import { motion } from 'motion/react';
 import { CreateCommentForm } from '../components/forms/create-comment-form';
 import { useLocalStorage } from '@uidotdev/usehooks';
@@ -34,7 +33,7 @@ export default function RecipeDetailPage() {
   const handleAddFavorite = async () => {
     if (!recipe) return;
 
-    const res = await AddFavorite(recipe.id, user?.userId);
+    const res = await AddFavorite(recipe.id, user!);
     if (res.error) {
       console.error(res.error);
       toast.error(res.error);
@@ -48,7 +47,7 @@ export default function RecipeDetailPage() {
     if (!recipe) return;
     const res = await RemoveFavorite(
       recipe.id,
-      user?.userId
+      user?.userId || 3
     );
     if (res.error) {
       console.error(res.error);
@@ -63,6 +62,7 @@ export default function RecipeDetailPage() {
   };
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     const fetchRecipe = async () => {
       if (!id) {
         setRecipe(null);
@@ -76,10 +76,7 @@ export default function RecipeDetailPage() {
   }, [id]);
 
   const handleGoBack = () => {
-    navigate(-1, {
-      viewTransition: true,
-      preventScrollReset: true
-    });
+    navigate(-1);
   };
 
   return (
