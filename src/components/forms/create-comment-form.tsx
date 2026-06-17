@@ -23,6 +23,7 @@ import { Textarea } from '../ui/textarea';
 import { useLocalStorage } from '@uidotdev/usehooks';
 import type { UserSession } from '../../types/user-session';
 import { CreateComment } from '../../services/comment-service';
+import { useNavigate } from 'react-router';
 
 const formSchema = z.object({
   title: z
@@ -41,6 +42,7 @@ export function CreateCommentForm({
   const [user] = useLocalStorage<UserSession | null>(
     'user_session'
   );
+  const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -72,7 +74,7 @@ export function CreateCommentForm({
       console.log(res);
     } else {
       toast.success(`Comentario publicado`);
-      window.location.reload();
+      navigate('/recetas/' + recipeId);
     }
   }
 
