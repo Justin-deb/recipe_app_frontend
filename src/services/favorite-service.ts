@@ -1,6 +1,7 @@
 import { API_URL } from '../lib/constants';
 import type { DataResponse } from '../types/data-response';
-import type { Recipe } from '../types/types';
+import type { Recipe, User } from '../types/types';
+import type { UserSession } from '../types/user-session';
 
 export type GetFavoritesByUserResponse = DataResponse<
   Recipe[]
@@ -26,15 +27,39 @@ export async function getFavoritesByUser(
 }
 
 export type AddFavoriteResponse = DataResponse<Recipe>;
-export async function AddFavorite(recipeId, userId) {
-  const res = await fetch(`${API_URL}/favorites`, {
+export async function AddFavorite(
+  recipeId: number,
+  user_session: UserSession
+) {
+  console.log(user_session);
+  if (!user_session) {
+    return {
+      data: null,
+      error: 'Usuario no autenticado'
+    };
+  }
+
+  const usersRes = await fetch(`${API_URL}/user`);
+  if (!usersRes.ok) {
+    return {
+      data: null,
+      error: 'Error al crear la receta'
+    };
+  }
+
+  const users: User[] = await usersRes.json();
+  const currentUser: User | undefined = users.find(
+    (user: User) => user_session.email === user.email
+  );
+
+  const res = await fetch(`${API_URL}/favorite`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      recipe_id: recipeId,
-      user_id: userId
+      recipeId,
+      userId: currentUser?.id
     })
   });
 
@@ -52,15 +77,18 @@ export async function AddFavorite(recipeId, userId) {
 }
 
 export type RemoveFavoriteResponse = DataResponse<Recipe>;
-export async function RemoveFavorite(recipeId, userId) {
-  const res = await fetch(`${API_URL}/favorites`, {
+export async function RemoveFavorite(
+  recipeId: number,
+  userId: number
+) {
+  const res = await fetch(`${API_URL}/favorite`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      recipe_id: recipeId,
-      user_id: userId
+      recipeId,
+      userId
     })
   });
 

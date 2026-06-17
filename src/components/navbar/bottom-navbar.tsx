@@ -23,19 +23,26 @@ export function BottomNavBar({
     <motion.nav
       initial={{ scale: 0.9, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 26 }}
+      transition={{
+        type: 'spring',
+        stiffness: 300,
+        damping: 26
+      }}
       role='navigation'
       aria-label='Bottom Navigation'
       className={cn(
-        'bg-card dark:bg-card border border-border dark:border-sidebar-border rounded-full flex items-center justify-center p-2 shadow-xl space-x-1 min-w-[320px] max-w-[95vw] h-[52px]',
-        stickyBottom && 'fixed inset-x-0 bottom-4 mx-auto z-20 w-fit',
+        'bg-card dark:bg-card border border-border dark:border-sidebar-border rounded-full flex items-center justify-center p-2 shadow-xl space-x-1 min-w-[320px] max-w-[95vw] h-[52px] flex md:hidden',
+        stickyBottom &&
+          'fixed inset-x-0 bottom-4 mx-auto z-20 w-fit',
         className
       )}
     >
       {NAV_LINKS.map((item) => {
         const Icon = item.icon;
         const isActive =
-          item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
+          item.href === '/' ?
+            pathname === '/'
+          : pathname.startsWith(item.href);
 
         return (
           <motion.button
@@ -62,21 +69,32 @@ export function BottomNavBar({
             <motion.div
               initial={false}
               animate={{
-                width: isActive ? `${MOBILE_LABEL_WIDTH}px` : '0px',
+                width:
+                  isActive ?
+                    `${MOBILE_LABEL_WIDTH}px`
+                  : '0px',
                 opacity: isActive ? 1 : 0,
                 marginLeft: isActive ? '8px' : '0px'
               }}
               transition={{
-                width: { type: 'spring', stiffness: 350, damping: 32 },
+                width: {
+                  type: 'spring',
+                  stiffness: 350,
+                  damping: 32
+                },
                 opacity: { duration: 0.19 },
                 marginLeft: { duration: 0.19 }
               }}
-              className={cn('overflow-hidden flex items-center max-w-[72px]')}
+              className={cn(
+                'overflow-hidden flex items-center max-w-[72px]'
+              )}
             >
               <span
                 className={cn(
                   'font-medium text-xs whitespace-nowrap select-none transition-opacity duration-200 overflow-hidden text-ellipsis text-[clamp(0.95rem,0.5263rem+0.5263vw,1rem)] leading-[1.9]',
-                  isActive ? 'text-primary dark:text-primary' : 'opacity-0'
+                  isActive ?
+                    'text-primary dark:text-primary'
+                  : 'opacity-0'
                 )}
                 title={item.label}
               >

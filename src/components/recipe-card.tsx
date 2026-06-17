@@ -17,8 +17,7 @@ export function RecipeCard({ recipe }: RecipeProps) {
 
   const navigateToDetail = () => {
     navigate('/recetas/' + recipe.id, {
-      viewTransition: true,
-      preventScrollReset: true
+      viewTransition: true
     });
   };
 
@@ -27,7 +26,7 @@ export function RecipeCard({ recipe }: RecipeProps) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className='bg-card shadow-xl shadow-primary rounded min-h-[250px]'
+      className='bg-card shadow-xl shadow-primary rounded min-h-[250px] max-h-[380px]'
       key={recipe.id}
     >
       <div className='relative'>

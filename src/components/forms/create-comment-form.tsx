@@ -2,14 +2,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
 
 import { Button } from '../ui/button';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle
@@ -23,13 +20,6 @@ import {
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 
-import { CreateRecipe } from '../../services/recipe-service';
-import type {
-  Country,
-  Ingredient
-} from '../../types/types';
-import { getCountries } from '../../services/country-service';
-import { getIngredients } from '../../services/ingredient-service';
 import { useLocalStorage } from '@uidotdev/usehooks';
 import type { UserSession } from '../../types/user-session';
 import { CreateComment } from '../../services/comment-service';
@@ -48,8 +38,6 @@ export interface CreateCommentFormProps {
 export function CreateCommentForm({
   recipeId
 }: CreateCommentFormProps) {
-  const navigate = useNavigate();
-
   const [user] = useLocalStorage<UserSession | null>(
     'user_session'
   );
