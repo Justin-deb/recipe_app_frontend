@@ -32,7 +32,7 @@ export const NAV_LINKS: NavLink[] = [
     icon: CookingPot
   },
   {
-    href: '/recetas/crear',
+    href: '/crear',
     label: 'Crear',
     icon: PlusCircleIcon
   },

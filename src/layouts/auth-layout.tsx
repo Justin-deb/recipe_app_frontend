@@ -1,11 +1,13 @@
+import { useLocalStorage } from '@uidotdev/usehooks';
 import { Navigate, Outlet } from 'react-router';
+import type { UserSession } from '../types/user-session';
 
 export function PrivateLayout() {
-  // TODO: Reemplaza esto con tu lógica real de autenticación (ej: const { user } = useAuth();)
-  const isAuthenticated = Boolean(localStorage.getItem('token'));
+  const [user] = useLocalStorage<UserSession | null>('user_session');
+  const isAuthenticated = user?.last_session;
 
   if (!isAuthenticated) {
-    // Si no está logueado, lo mandamos al login
+    // si no esta logueado lo mandamos al login
     return (
       <Navigate
         to='/login'
@@ -14,15 +16,16 @@ export function PrivateLayout() {
     );
   }
 
-  // Si está logueado, renderiza las rutas hijas
+  // si si entonces lo manda a la ruta hija
   return <Outlet />;
 }
 
 export function PublicOnlyLayout() {
-  const isAuthenticated = Boolean(localStorage.getItem('token'));
+  const [user] = useLocalStorage<UserSession | null>('user_session');
+  const isAuthenticated = user?.last_session;
 
   if (isAuthenticated) {
-    // Si ya inició sesión, no tiene sentido que vea el login, lo mandamos al home
+    // si ya inicio sesion no tiene sentido que vea el login entonces lo mandamos al home
     return (
       <Navigate
         to='/'
