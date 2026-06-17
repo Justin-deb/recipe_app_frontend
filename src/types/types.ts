@@ -14,10 +14,12 @@ export interface Country {
 }
 
 export interface Comment {
-  id: number;
+  id: string;
+  userId: string;
+  username: string;
+  recipeId: string;
   title: string;
   description: string;
-  user: User;
 }
 
 export interface Step {
@@ -31,19 +33,20 @@ export interface Step {
 export interface Ingredient {
   id: number;
   name: string;
-  amount: string;
 }
 
 export interface Recipe {
-  id: number;
-  name: string;
-  description: string;
-  photo_url: string;
-  author: User;
-  country: Country;
-  ingredients: Ingredient[];
-  steps: Step[];
   comments: Comment[];
+  countryFlag: string;
+  countryId: string;
+  countryName: string;
+  description: string;
+  id: number;
+  ingredients: Ingredient[];
+  name: string;
+  photoUrl: string;
+  userId: string;
+  username: string;
 }
 
 // Agrega esto a tu archivo types/recipe.ts

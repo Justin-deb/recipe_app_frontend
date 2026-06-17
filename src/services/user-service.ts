@@ -53,12 +53,17 @@ export async function Register({
     };
   }
 
-  const res = await fetch(`${API_URL}/register`, {
+  const res = await fetch(`${API_URL}/user`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ username, email, password })
+    body: JSON.stringify({
+      username,
+      email,
+      password,
+      avatar: `https://api.dicebear.com/6.x/avataaars/svg?seed=${username}`
+    })
   });
 
   if (!res.ok) {
@@ -71,6 +76,6 @@ export async function Register({
 
   return {
     error: null,
-    data: (await res.json()).data
+    data: await res.json()
   };
 }

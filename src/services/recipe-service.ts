@@ -5,8 +5,9 @@ import type { Recipe } from '../types/types';
 export type GetRecipesResponse = DataResponse<Recipe[]>;
 
 export async function getRecipes(): Promise<GetRecipesResponse> {
-  const res = await fetch(`${API_URL}/recipes`);
-
+  const res = await fetch(`${API_URL}/recipe`);
+  const data = await res.json();
+  console.log(data);
   if (!res.ok) {
     return {
       error: 'Error fetching recipes',
@@ -16,7 +17,7 @@ export async function getRecipes(): Promise<GetRecipesResponse> {
 
   return {
     error: null,
-    data: await res.json()
+    data: data
   };
 }
 
@@ -24,7 +25,7 @@ export type GetRecipeByIdResponse = DataResponse<Recipe>;
 export async function getRecipeById(
   id: string
 ): Promise<GetRecipeByIdResponse> {
-  const res = await fetch(`${API_URL}/recipes/${id}`);
+  const res = await fetch(`${API_URL}/recipe/${id}`);
   if (!res.ok) {
     return {
       error: 'Ocurrio un error al cargar la receta',
@@ -36,6 +37,48 @@ export async function getRecipeById(
     return {
       error: 'No se encontro la receta',
       data: null
+    };
+  }
+
+  return {
+    error: null,
+    data: await res.json()
+  };
+}
+
+export type CreateRecipeResponse = DataResponse<Recipe>;
+export async function CreateRecipe({
+  name,
+  description,
+  photoUrl,
+  countryId,
+  ingredients
+}: {
+  name: string;
+  description: string;
+  photoUrl: string;
+  countryId: string;
+  ingredients: string[];
+}): Promise<CreateRecipeResponse> {
+  const res = await fetch(`${API_URL}/recipe`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      name,
+      description,
+      photoUrl,
+      countryId,
+      ingredients
+    })
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json();
+    return {
+      data: null,
+      error: errorData.message || 'Error al crear la receta'
     };
   }
 

@@ -2,12 +2,15 @@ import { HeartIcon } from 'lucide-react';
 import type { Recipe } from '../types/types';
 import { Button } from './ui/button';
 import { useNavigate } from 'react-router';
+import { useState } from 'react';
+import noImage from '/no-image.jpg';
 
 interface RecipeProps {
   recipe: Recipe;
 }
 export function RecipeCard({ recipe }: RecipeProps) {
   const navigate = useNavigate();
+  const [imageURL, setImageURL] = useState<string>(recipe.photoUrl || noImage);
 
   const navigateToDetail = () => {
     navigate('/recetas/' + recipe.id, { viewTransition: true });
@@ -18,32 +21,25 @@ export function RecipeCard({ recipe }: RecipeProps) {
       className='bg-card shadow-xl shadow-primary rounded'
       key={recipe.id}
     >
-      <div
-        onClick={navigateToDetail}
-        className='relative'
-      >
-        {/* Flag image */}
-        <img
-          src={recipe?.country.flag_url}
-          alt={`Recipe from ${recipe?.country.name}`}
-          style={{ viewTransitionName: `recipe-flag-image-${recipe.id}` }}
-          className='absolute top-2 left-2 z-10 rounded shadow-xl max-w-[50px]'
-        />
-
-        {/* Favorite button */}
-        <Button
-          className='absolute top-2 right-2 z-10 rounded shadow-xl'
-          style={{ viewTransitionName: `recipe-favorite-button-${recipe.id}` }}
-        >
-          <HeartIcon />
-          <span>Favorito</span>
-        </Button>
+      <div className='relative'>
+        {/* Flag container */}
+        <div className='absolute flex z-10 w-full justify-between p-2 h-14'>
+          {/* Flag image */}
+          <img
+            src={recipe?.countryFlag}
+            alt={`Recipe from ${recipe?.countryName}`}
+            style={{ viewTransitionName: `recipe-flag-image-${recipe.id}` }}
+            className='rounded-full shadow-xl max-w-[40px] object-center object-cover'
+          />
+        </div>
 
         {/* Image */}
         <img
-          src={recipe.photo_url}
+          onClick={navigateToDetail}
+          src={imageURL}
           style={{ viewTransitionName: `recipe-image-${recipe.id}` }}
-          className='w-full h-full max-h-[200px] object-cover rounded'
+          className='w-full h-full max-h-[200px] min-h-[200px] object-cover rounded'
+          onError={() => setImageURL(noImage)}
         />
       </div>
 
