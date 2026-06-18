@@ -87,3 +87,39 @@ export async function CreateComment({
     data: await res.json()
   };
 }
+
+export type UpdateCommentResponse = DataResponse<Comment>;
+export async function UpdateComment({
+  commentId,
+  title,
+  description
+}: {
+  commentId: string;
+  title: string;
+  description: string;
+}): Promise<UpdateCommentResponse> {
+  const res = await fetch(`${API_URL}/comment/${commentId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      title,
+      description
+    })
+  });
+
+  if (!res.ok) {
+    return {
+      error:
+        (await res.json()) ||
+        'Error al actualizar el comentario',
+      data: null
+    };
+  }
+
+  return {
+    error: null,
+    data: await res.json()
+  };
+}
