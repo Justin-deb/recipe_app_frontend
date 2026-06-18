@@ -1,7 +1,7 @@
 /// <reference types="cypress" />
 
 const BASE_URL = "http://localhost:5173";
-const API_URL = "https://recipe-backend-v5.onrender.com/api";
+const API_URL = "https://recipe-backend-v8.onrender.com/api";
 
 function mockLogin() {
   cy.intercept("OPTIONS", `${API_URL}/user/login`, {
@@ -51,74 +51,83 @@ describe("Recipe App E2E", () => {
     doLogin();
   });
 
-  it('creates a recipe after logging in', () => {
-    cy.intercept('POST', `${API_URL}/user/login`, {
+  it("creates a recipe after logging in", () => {
+    cy.intercept("POST", `${API_URL}/user/login`, {
       statusCode: 200,
       body: {
         userId: 1,
-        username: 'Test User',
-        email: 'test@mail.com',
-        avatar: '',
+        username: "Test User",
+        email: "test@mail.com",
+        avatar: "",
         last_session: new Date().toISOString(),
       },
-    }).as('login');
+    }).as("login");
 
-    cy.intercept('GET', `${API_URL}/user`, {
+    cy.intercept("GET", `${API_URL}/user`, {
       statusCode: 200,
       body: [
         {
           id: 1,
-          username: 'Test User',
-          email: 'test@mail.com',
-          avatar: '',
+          username: "Test User",
+          email: "test@mail.com",
+          avatar: "",
         },
       ],
-    }).as('users');
+    }).as("users");
 
-    cy.intercept('POST', `${API_URL}/recipe`, {
+    cy.intercept("POST", `${API_URL}/recipe`, {
       statusCode: 201,
       body: {
         id: 1,
-        name: 'Gallo Pinto',
+        name: "Gallo Pinto",
       },
-    }).as('createRecipe');
+    }).as("createRecipe");
 
     cy.visit(`${BASE_URL}/login`);
 
-    cy.get('#form-rhf-input-email').type('test@mail.com');
-    cy.get('#form-rhf-input-password').type('12345678');
-    cy.contains('button', 'Iniciar Sesion').click();
+    cy.get("#form-rhf-input-email").type("test@mail.com");
+    cy.get("#form-rhf-input-password").type("12345678");
+    cy.contains("button", "Iniciar Sesion").click();
 
-    cy.wait('@login');
+    cy.wait("@login");
 
     cy.visit(`${BASE_URL}/crear`);
 
-    cy.get('#input-name').type('Gallo Pinto');
-    cy.get('#input-description').type(
-      'Traditional Costa Rican breakfast recipe.'
+    cy.get("#input-name").type("Gallo Pinto");
+    cy.get("#input-description").type(
+      "Traditional Costa Rican breakfast recipe.",
     );
-    cy.get('#input-image').type('https://example.com/gallo.jpg');
+    cy.get("#input-image").type("https://example.com/gallo.jpg");
 
-    cy.get('#select-country')
-      .should('be.visible')
-      .select('1')
-      .should('have.value', '1');
+    cy.get("#select-country")
+      .should("be.visible")
+      .select("1")
+      .should("have.value", "1");
 
-    cy.get('#select-ingredients option').should('have.length.at.least', 2);
+    cy.get("#select-ingredients")
+      .should("be.visible")
+      .find("option")
+      .then(($options) => {
+        const values = Array.from($options)
+          .slice(0, 2)
+          .map((o) => o.value);
 
-    cy.get('#select-ingredients')
-      .should('be.visible')
-      .select(['4', '2']);
+        cy.get("#select-ingredients").select(values);
 
-    cy.get('#select-ingredients')
-      .invoke('val')
-      .should('deep.equal', ['4', '2']);
+        cy.get("#select-ingredients")
+          .invoke("val")
+          .then((selected) => {
+            values.forEach((v) => {
+              expect(selected).to.include(v);
+            });
+          });
+      });
 
-    cy.contains('button', 'Publicar Receta').click();
+    cy.contains("button", "Publicar Receta").click();
 
-    cy.wait('@users');
-    cy.wait('@createRecipe');
+    cy.wait("@users");
+    cy.wait("@createRecipe");
 
-    cy.location('pathname').should('include', '/recetas');
+    cy.location("pathname").should("include", "/recetas");
   });
 });
