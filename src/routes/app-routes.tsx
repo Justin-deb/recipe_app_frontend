@@ -13,6 +13,7 @@ import ProfilePage from '../pages/profile';
 import RegisterPage from '../pages/register';
 import RecipeDetailPage from '../pages/recipe-detail';
 import CreateRecipePage from '../pages/create-recipe';
+import Favorite from '../pages/favorite';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -48,7 +49,7 @@ const router = createBrowserRouter(
         />
         <Route
           path='/favoritos'
-          element={<h1>favoritos</h1>}
+          element={<Favorite/>}
         />
         <Route
           path='/cuenta'
