@@ -1,4 +1,4 @@
-import { HeartIcon } from 'lucide-react';
+import { HeartIcon, Trash2 } from 'lucide-react';
 import type { Recipe } from '../types/types';
 import { Button } from './ui/button';
 import { useNavigate } from 'react-router';
@@ -8,8 +8,9 @@ import { motion } from 'motion/react';
 
 interface RecipeProps {
   recipe: Recipe;
+  onDelete?: (id: number) => void;
 }
-export function RecipeCard({ recipe }: RecipeProps) {
+export function RecipeCard({ recipe, onDelete }: RecipeProps) {
   const navigate = useNavigate();
   const [imageURL, setImageURL] = useState<string>(
     recipe.photoUrl || noImage
@@ -100,16 +101,30 @@ export function RecipeCard({ recipe }: RecipeProps) {
           >
             <span>Ver detalles</span>
           </Button>
-          <Button
-            size={'icon-lg'}
-            variant={'outline'}
-            className='rounded'
-          >
-            <HeartIcon
-              size={44}
-              className='text-foreground/70 w-full h-full'
-            />
-          </Button>
+          {onDelete ? (
+            <Button
+              size={'icon-lg'}
+              variant={'destructive'}
+              className='rounded'
+              onClick={() => {
+                const ok = confirm('¿Eliminar esta receta? Esta acción no se puede deshacer.');
+                if (ok) onDelete(recipe.id);
+              }}
+            >
+              <Trash2 size={28} className='text-foreground/70 w-full h-full' />
+            </Button>
+          ) : (
+            <Button
+              size={'icon-lg'}
+              variant={'outline'}
+              className='rounded'
+            >
+              <HeartIcon
+                size={44}
+                className='text-foreground/70 w-full h-full'
+              />
+            </Button>
+          )}
         </div>
       </div>
     </motion.div>
