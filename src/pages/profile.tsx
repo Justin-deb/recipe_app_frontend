@@ -5,17 +5,13 @@ import { LogOutIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEffect, useState } from 'react';
 import type { Recipe } from '../types/types';
-import {
-  getRecipes,
-  deleteRecipe,
-  getRecipesByUser
-} from '../services/recipe-service';
+import { deleteRecipe, getRecipesByUser } from '../services/recipe-service';
 import { RecipeCard } from '../components/recipe-card';
 
 export default function ProfilePage() {
   const [user, setUser] = useLocalStorage<UserSession | null>('user_session');
   const [myRecipes, setMyRecipes] = useState<Recipe[]>([] as Recipe[]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [, setIsLoading] = useState<boolean>(false);
 
   const handleLogout = () => {
     setUser(null);

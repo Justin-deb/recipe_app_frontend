@@ -3,15 +3,11 @@ import type { DataResponse } from '../types/data-response';
 import type { Recipe, User } from '../types/types';
 import type { UserSession } from '../types/user-session';
 
-export type GetFavoritesByUserResponse = DataResponse<
-  Recipe[]
->;
+export type GetFavoritesByUserResponse = DataResponse<Recipe[]>;
 export async function getFavoritesByUser(
-  userId: string
+  userId: number
 ): Promise<GetFavoritesByUserResponse> {
-  const res = await fetch(
-    `${API_URL}/favorites/recipe/${userId}`
-  );
+  const res = await fetch(`${API_URL}/favorite/recipe/${userId}`);
 
   if (!res.ok) {
     return {
@@ -27,10 +23,7 @@ export async function getFavoritesByUser(
 }
 
 export type AddFavoriteResponse = DataResponse<Recipe>;
-export async function AddFavorite(
-  recipeId: number,
-  user_session: UserSession
-) {
+export async function AddFavorite(recipeId: number, user_session: UserSession) {
   console.log(user_session);
   if (!user_session) {
     return {
@@ -77,10 +70,7 @@ export async function AddFavorite(
 }
 
 export type RemoveFavoriteResponse = DataResponse<Recipe>;
-export async function RemoveFavorite(
-  recipeId: number,
-  userId: number
-) {
+export async function RemoveFavorite(recipeId: number, userId: number) {
   const res = await fetch(`${API_URL}/favorite`, {
     method: 'DELETE',
     headers: {

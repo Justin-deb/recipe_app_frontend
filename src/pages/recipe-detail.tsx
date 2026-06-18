@@ -9,10 +9,7 @@ import { motion } from 'motion/react';
 import { CreateCommentForm } from '../components/forms/create-comment-form';
 import { useLocalStorage } from '@uidotdev/usehooks';
 import type { UserSession } from '../types/user-session';
-import {
-  AddFavorite,
-  RemoveFavorite
-} from '../services/favorite-service';
+import { AddFavorite, RemoveFavorite } from '../services/favorite-service';
 import { toast } from 'sonner';
 
 export default function RecipeDetailPage() {
@@ -20,15 +17,10 @@ export default function RecipeDetailPage() {
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const navigate = useNavigate();
   const [imageURL, setImageURL] = useState<string>(noImage);
-  const [favorites, setFavorites] =
-    useLocalStorage<Recipe[]>('favorites');
-  const [user] = useLocalStorage<UserSession | null>(
-    'user_session'
-  );
+  const [favorites, setFavorites] = useLocalStorage<Recipe[]>('favorites');
+  const [user] = useLocalStorage<UserSession | null>('user_session');
 
-  const isFavorite = favorites?.some(
-    (favorite) => favorite.id === recipe?.id
-  );
+  const isFavorite = favorites?.some((favorite) => favorite.id === recipe?.id);
 
   const handleAddFavorite = async () => {
     if (!recipe) return;
@@ -45,19 +37,12 @@ export default function RecipeDetailPage() {
 
   const handleRemoveFavorite = async () => {
     if (!recipe) return;
-    const res = await RemoveFavorite(
-      recipe.id,
-      user?.userId || 3
-    );
+    const res = await RemoveFavorite(recipe.id, user?.id || 3);
     if (res.error) {
       console.error(res.error);
     } else {
       toast.info('Receta eliminada de favoritos');
-      setFavorites(
-        favorites?.filter(
-          (favorite) => favorite.id !== recipe.id
-        )
-      );
+      setFavorites(favorites?.filter((favorite) => favorite.id !== recipe.id));
     }
   };
 
@@ -107,17 +92,11 @@ export default function RecipeDetailPage() {
             style={{
               viewTransitionName: `recipe-favorite-button-${id}`
             }}
-            onClick={
-              isFavorite ?
-                handleRemoveFavorite
-              : handleAddFavorite
-            }
+            onClick={isFavorite ? handleRemoveFavorite : handleAddFavorite}
           >
             <HeartIcon />
             <span>
-              {isFavorite ?
-                'Quitar de favoritos'
-              : 'Agregar a favoritos'}
+              {isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
             </span>
           </Button>
         </div>
@@ -158,8 +137,7 @@ export default function RecipeDetailPage() {
             viewTransitionName: `recipe-author-${id}`
           }}
         >
-          {recipe?.username &&
-            `Subido por ${recipe?.username}`}
+          {recipe?.username && `Subido por ${recipe?.username}`}
         </h3>
       </div>
 
@@ -187,9 +165,7 @@ export default function RecipeDetailPage() {
               <h4 className='text-xs pb-1 text-accent-foreground/80'>
                 Autor: {comment.username}
               </h4>
-              <p className='text-md break-all'>
-                {comment.description}
-              </p>
+              <p className='text-md break-all'>{comment.description}</p>
             </div>
           ))
         }
