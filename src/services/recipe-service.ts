@@ -22,6 +22,48 @@ export async function getRecipes(): Promise<GetRecipesResponse> {
     data
   };
 }
+export type GetRecipesByUserResponse = DataResponse<Recipe[]>;
+
+export async function getRecipesByUser(
+  userId: number
+): Promise<GetRecipesByUserResponse> {
+  const res = await fetch(`${API_URL}/recipe/user/${userId}`);
+  const data = await res.json();
+
+  if (!res.ok) {
+    return {
+      error: 'Error fetching recipes',
+      data: null
+    };
+  }
+
+  return {
+    error: null,
+    data
+  };
+}
+
+export type DeleteRecipeResponse = DataResponse<null>;
+export const deleteRecipe = async (id: number) => {
+  const response = await fetch(`${API_URL}/recipe/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+
+  if (!response.ok) {
+    return {
+      error: 'Ocurrio un error al eliminar la receta',
+      data: null
+    };
+  }
+
+  return {
+    error: null,
+    data: null
+  };
+};
 
 export type GetRecipeByIdResponse = DataResponse<Recipe>;
 export async function getRecipeById(
@@ -45,9 +87,7 @@ export async function getRecipeById(
 
   let recipe: Recipe = await res.json();
 
-  const comments = await getCommentsByRecipe(
-    recipe.id.toString()
-  );
+  const comments = await getCommentsByRecipe(recipe.id.toString());
   if (!comments.error) {
     recipe = { ...recipe, comments: comments.data! };
   }
