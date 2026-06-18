@@ -15,6 +15,7 @@ import {
 } from '../ui/card';
 import {
   Field,
+  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel
@@ -23,10 +24,7 @@ import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 
 import { CreateRecipe } from '../../services/recipe-service';
-import type {
-  Country,
-  Ingredient
-} from '../../types/types';
+import type { Country, Ingredient } from '../../types/types';
 import { getCountries } from '../../services/country-service';
 import { getIngredients } from '../../services/ingredient-service';
 import { useLocalStorage } from '@uidotdev/usehooks';
@@ -39,29 +37,18 @@ const formSchema = z.object({
     .max(50, 'El nombre no puede exceder 50 caracteres'),
   description: z
     .string()
-    .min(
-      20,
-      'Añade una sinopsis y las instrucciones detalladas'
-    ),
-  photoUrl: z
-    .string()
-    .url('Debe ser una URL válida de imagen'),
+    .min(20, 'Añade una sinopsis y las instrucciones detalladas'),
+  photoUrl: z.string().url('Debe ser una URL válida de imagen'),
   countryId: z.string().min(1, 'Debes seleccionar un país'),
-  ingredients: z
-    .array(z.string())
-    .min(1, 'Selecciona al menos un ingrediente')
+  ingredients: z.array(z.string()).min(1, 'Selecciona al menos un ingrediente')
 });
 
 export function CreateRecipeForm() {
   const navigate = useNavigate();
 
-  const [user] = useLocalStorage<UserSession | null>(
-    'user_session'
-  );
+  const [user] = useLocalStorage<UserSession | null>('user_session');
   const [countries, setCountries] = useState<Country[]>([]);
-  const [ingredientsList, setIngredientsList] = useState<
-    Ingredient[]
-  >([]);
+  const [ingredientsList, setIngredientsList] = useState<Ingredient[]>([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -77,24 +64,19 @@ export function CreateRecipeForm() {
 
   useEffect(() => {
     async function fetchData() {
-      const [countriesData, ingredientsData] =
-        await Promise.all([
-          getCountries(),
-          getIngredients()
-        ]);
+      const [countriesData, ingredientsData] = await Promise.all([
+        getCountries(),
+        getIngredients()
+      ]);
       setCountries(countriesData.data ?? []);
       setIngredientsList(ingredientsData.data ?? []);
     }
     fetchData();
   }, []);
 
-  async function onSubmit(
-    data: z.infer<typeof formSchema>
-  ) {
+  async function onSubmit(data: z.infer<typeof formSchema>) {
     if (!user) {
-      toast.error(
-        'Debes iniciar sesión para crear una receta'
-      );
+      toast.error('Debes iniciar sesión para crear una receta');
       return;
     }
 
@@ -105,9 +87,7 @@ export function CreateRecipeForm() {
     if (res.error) {
       toast.error(res.error);
     } else {
-      toast.success(
-        `Receta "${data.name}" creada exitosamente`
-      );
+      toast.success(`Receta "${data.name}" creada exitosamente`);
       navigate('/recetas');
     }
   }
@@ -225,9 +205,7 @@ export function CreateRecipeForm() {
                       id='select-country'
                       className='flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
                     >
-                      <option value=''>
-                        Selecciona un país...
-                      </option>
+                      <option value=''>Selecciona un país...</option>
                       {countries.map((c) => (
                         <option
                           key={c.id}
@@ -280,6 +258,9 @@ export function CreateRecipeForm() {
                         </option>
                       ))}
                     </select>
+                    <FieldDescription className='hidden md:block'>
+                      Manten CTRL y clickea para agregar varios
+                    </FieldDescription>
                     {fieldState.invalid && (
                       <FieldError
                         errors={[fieldState.error]}

@@ -5,7 +5,11 @@ import { LogOutIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEffect, useState } from 'react';
 import type { Recipe } from '../types/types';
-import { getRecipes, deleteRecipe } from '../services/recipe-service';
+import {
+  getRecipes,
+  deleteRecipe,
+  getRecipesByUser
+} from '../services/recipe-service';
 import { RecipeCard } from '../components/recipe-card';
 
 export default function ProfilePage() {
@@ -22,65 +26,73 @@ export default function ProfilePage() {
     const fetchMyRecipes = async () => {
       if (!user) return;
       setIsLoading(true);
-      const res = await getRecipes();
-      if (!res.error && res.data) {
-        const mine = res.data.filter(
-          (r) => String(r.userId) === String(user.userId)
-        );
-        setMyRecipes(mine);
-      } else {
-        setMyRecipes([]);
+      const res = await getRecipesByUser(user.id);
+
+      if (res.error) {
+        toast.error('No se pudieron cargar tus recetas');
       }
+      setMyRecipes(res.data || []);
       setIsLoading(false);
     };
     fetchMyRecipes();
-  }, [user]);
+  }, []);
 
   const handleDelete = async (id: number) => {
-    try {
-      await deleteRecipe(id);
+    const res = await deleteRecipe(id);
+    if (res.error) {
+      toast.error('Error al eliminar la receta');
+    } else {
       setMyRecipes((prev) => prev.filter((r) => r.id !== id));
       toast.success('Receta eliminada');
-    } catch (err) {
-      toast.error('Error al eliminar la receta');
     }
   };
 
   return (
     <>
-      <div className='bg-card w-full max-h-[400px] rounded shadow-lg flex flex-col'>
-        {/* Image container */}
-        <div className='bg-accent rounded relative h-4/4 shadow'>
-          {/* Image */}
-          <img
-            src={user?.avatar}
-            alt={user?.username}
-            className='w-[200px] border-8 shadow border-accent rounded-full absolute top-1/8 left-1/2 -translate-x-1/2'
-          />
-        </div>
-
-        {/* Profile container */}
-        <div className='p-4 pt-12 flex flex-col h-full'>
-          {/* Profile info */}
-          <div className='flex flex-col flex-1'>
-            <h1 className='w-full text-center font-extrabold text-2xl text-primary text-shadow-2xs text-shadow-accent'>
-              {user?.username}
-            </h1>
-            <h2 className='w-full text-center text-accent-foreground/40 text-sm p-1'>
-              {user?.email}
-            </h2>
+      <div className='min-h-full w-full rounded shadow-lg flex flex-col gap-4'>
+        <div className='bg-card flex flex-col min-h-[400px]'>
+          {/* Image container */}
+          <div className='bg-accent rounded relative h-4/4 shadow'>
+            {/* Image */}
+            <img
+              src={user?.avatar}
+              alt={user?.username}
+              className='w-[200px] border-8 shadow border-accent rounded-full absolute top-1/8 left-1/2 -translate-x-1/2'
+            />
           </div>
 
-          {/* Logout button */}
-          <Button
-            className='rounded w-full'
-            variant={'destructive'}
-            size={'lg'}
-            onClick={() => handleLogout()}
-          >
-            <span>Cerrar sesión</span>
-            <LogOutIcon />
-          </Button>
+          {/* Profile container */}
+          <div className='p-4 pt-12 flex flex-col h-full'>
+            {/* Profile info */}
+            <div className='flex flex-col flex-1'>
+              <h1 className='w-full text-center font-extrabold text-2xl text-primary text-shadow-2xs text-shadow-accent'>
+                {user?.username}
+              </h1>
+              <h2 className='w-full text-center text-accent-foreground/40 text-sm p-1'>
+                {user?.email}
+              </h2>
+            </div>
+
+            {/* Logout button */}
+            <Button
+              className='rounded w-full'
+              variant={'destructive'}
+              size={'lg'}
+              onClick={() => handleLogout()}
+            >
+              <span>Cerrar sesión</span>
+              <LogOutIcon />
+            </Button>
+          </div>
+        </div>
+        <h1 className='text-2xl font-extrabold text-secondary'>Mis recetas</h1>
+        <div className='flex-1 grid grid-cols-1 md:grid-cols-3 gap-4'>
+          {myRecipes.map((recipe) => (
+            <RecipeCard
+              recipe={recipe}
+              onDelete={handleDelete}
+            />
+          ))}
         </div>
       </div>
     </>
