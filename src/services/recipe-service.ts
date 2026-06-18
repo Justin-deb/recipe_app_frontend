@@ -23,6 +23,22 @@ export async function getRecipes(): Promise<GetRecipesResponse> {
   };
 }
 
+export const deleteRecipe = async (id: number) => {
+  const response = await fetch(`${API_URL}/recipe/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+
+  if (!response.ok) {
+    return {
+      error: 'Ocurrio un error al eliminar la receta',
+      data: null
+    };
+  }
+};
+
 export type GetRecipeByIdResponse = DataResponse<Recipe>;
 export async function getRecipeById(
   id: string
@@ -127,4 +143,6 @@ export async function CreateRecipe({
     error: null,
     data
   };
+
+  
 }

@@ -3,13 +3,47 @@ import type { UserSession } from '../types/user-session';
 import { Button } from '../components/ui/button';
 import { LogOutIcon } from 'lucide-react';
 import { toast } from 'sonner';
+import { useEffect, useState } from 'react';
+import type { Recipe } from '../types/types';
+import { getRecipes, deleteRecipe } from '../services/recipe-service';
+import { RecipeCard } from '../components/recipe-card';
 
 export default function ProfilePage() {
   const [user, setUser] = useLocalStorage<UserSession | null>('user_session');
+  const [myRecipes, setMyRecipes] = useState<Recipe[]>([] as Recipe[]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleLogout = () => {
     setUser(null);
     toast.info('Cerraste sesión');
+  };
+
+  useEffect(() => {
+    const fetchMyRecipes = async () => {
+      if (!user) return;
+      setIsLoading(true);
+      const res = await getRecipes();
+      if (!res.error && res.data) {
+        const mine = res.data.filter(
+          (r) => String(r.userId) === String(user.userId)
+        );
+        setMyRecipes(mine);
+      } else {
+        setMyRecipes([]);
+      }
+      setIsLoading(false);
+    };
+    fetchMyRecipes();
+  }, [user]);
+
+  const handleDelete = async (id: number) => {
+    try {
+      await deleteRecipe(id);
+      setMyRecipes((prev) => prev.filter((r) => r.id !== id));
+      toast.success('Receta eliminada');
+    } catch (err) {
+      toast.error('Error al eliminar la receta');
+    }
   };
 
   return (
