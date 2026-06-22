@@ -8,18 +8,21 @@ import { AnimatePresence, motion } from 'motion/react';
 import { Field, FieldGroup, FieldLabel } from '../components/ui/field';
 import { Controller, useForm } from 'react-hook-form';
 import { getCountries } from '../services/country-service';
-
+import { getFavoritesByUser } from '../services/favorite-service';
+import { useLocalStorage } from '@uidotdev/usehooks';
+import type { UserSession } from '../types/user-session';
 
 export default function RecipesPage() {
-  const [recipes, setRecipes] = useState<Recipe[]>(
-    [] as Recipe[]
-  );
+  const [recipes, setRecipes] = useState<Recipe[]>([] as Recipe[]);
   const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] =
-    useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [search, setSearch] = useState<string>('');
   const [countries, setCountries] = useState<Country[]>([] as Country[]);
-  const [countrySelectedId, setCountrySelectedId] = useState<string | undefined>();
+  const [countrySelectedId, setCountrySelectedId] = useState<
+    string | undefined
+  >();
+  const [user] = useLocalStorage<UserSession>('user_session');
+  const [, setLocalFavorites] = useLocalStorage('favorites');
 
   useEffect(() => {
     const fetchRecipes = async () => {
@@ -33,31 +36,43 @@ export default function RecipesPage() {
         setError(res.error);
         setCountries([] as Country[]);
       } else {
-        setRecipes(res.data!.sort((r1,r2)=>r1.name.localeCompare(r2.name)));
+        setRecipes(res.data!.sort((r1, r2) => r1.name.localeCompare(r2.name)));
         setCountries(countryRequest.data!);
         setError(null);
       }
       setIsLoading(false);
     };
+
+    const getFavorites = async () => {
+      setIsLoading(true);
+      const res = await getFavoritesByUser(user.id);
+      if (res.error) {
+        console.log('error');
+      } else {
+        setLocalFavorites(res.data!);
+        console.log(res.data!);
+      }
+      setIsLoading(false);
+    };
+
+    getFavorites();
     fetchRecipes();
   }, []);
 
-  const onSubmitFilter = () => { }
+  const onSubmitFilter = () => {};
 
   const form = useForm({
     defaultValues: {
-      countryId: "",
-    },
+      countryId: ''
+    }
   });
 
   return (
     <div className='w-full min-h-dvh'>
-      <h1 className='text-xl font-extrabold text-primary'>
-        Buscar una receta
-      </h1>
+      <h1 className='text-xl font-extrabold text-primary'>Buscar una receta</h1>
       <p className='leading-4.5 text-foreground/50 text-sm font-light pb-2'>
-        Busca con pais, nombre o ingredientes. Encuentra
-        justo lo que quieres cocinar para tu disfrute
+        Busca con pais, nombre o ingredientes. Encuentra justo lo que quieres
+        cocinar para tu disfrute
       </p>
       <div className='flex flex-col items-start gap-2 mb-5'>
         <Input
@@ -67,7 +82,11 @@ export default function RecipesPage() {
           autoFocus
           onChange={(e) => setSearch(e.target.value)}
         />
-        <form className='w-full' id='form-filter-country' onSubmit={onSubmitFilter}>
+        <form
+          className='w-full'
+          id='form-filter-country'
+          onSubmit={onSubmitFilter}
+        >
           <FieldGroup>
             <Controller
               name='countryId'
@@ -83,22 +102,18 @@ export default function RecipesPage() {
                     className='flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
                     onChange={(e) => {
                       const value = e.target.value;
-                      console.log(value)
+                      console.log(value);
                       field.onChange(value);
-                      setCountrySelectedId(value === '' ? undefined : value)
+                      setCountrySelectedId(value === '' ? undefined : value);
                     }}
                   >
-                    <option value=''>
-                      Selecciona un país...
-                    </option>
+                    <option value=''>Selecciona un país...</option>
                     {countries.map((c) => (
                       <option
                         key={c.id}
                         value={c.id.toString()}
                       >
-                        {
-                          c.name
-                        }
+                        {c.name}
                       </option>
                     ))}
                   </select>
@@ -117,18 +132,21 @@ export default function RecipesPage() {
             <motion.div className='flex flex-1 justify-center items-center'>
               <Spinner className='self-center size-8' />
             </motion.div>
-            : error && !recipes ?
-              <h1>Hubo un error: ${error}</h1>
-              : recipes
-                .filter((recipe) =>
-                  recipe.name.toLowerCase().includes(search)
-                ).filter((recipe)=> countrySelectedId != undefined ? recipe.countryId == countrySelectedId : recipe)
-                .map((recipe) => (
-                  <RecipeCard
-                    recipe={recipe}
-                    key={recipe.id}
-                  />
-                ))
+          : error && !recipes ?
+            <h1>Hubo un error: ${error}</h1>
+          : recipes
+              .filter((recipe) => recipe.name.toLowerCase().includes(search))
+              .filter((recipe) =>
+                countrySelectedId != undefined ?
+                  recipe.countryId == countrySelectedId
+                : recipe
+              )
+              .map((recipe) => (
+                <RecipeCard
+                  recipe={recipe}
+                  key={recipe.id}
+                />
+              ))
           }
         </section>
       </AnimatePresence>

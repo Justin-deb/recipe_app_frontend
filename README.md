@@ -1,6 +1,12 @@
 Repository Backend: https://github.com/Freddy-Baldizon/RecipeApp
 # RecipeApp Frontend
 
+- Fabian Alfaro Sandi
+- Justin Estrada Cruz
+- Mairon Barquero Salazar
+- Carlos Rodriguez Delgado
+- Freddy Baldizon Paladino
+
 Frontend de RecipeApp, una aplicación web para descubrir, publicar y guardar recetas de cocina. Construido con React, TypeScript y Vite, y consume la [API de RecipeApp](https://github.com/Freddy-Baldizon/RecipeApp).
 
 ## Características

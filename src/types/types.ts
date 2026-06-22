@@ -58,7 +58,7 @@ export interface Rating {
 }
 
 export interface RecipeFavorite {
-  id: number;
-  recipe_id: number;
-  user_id: number;
+  createdAt: string;
+  recipe: Recipe;
+  recipeId: number;
 }

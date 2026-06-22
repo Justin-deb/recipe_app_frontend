@@ -11,19 +11,13 @@ import {
   CardHeader,
   CardTitle
 } from '../ui/card';
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel
-} from '../ui/field';
+import { Field, FieldError, FieldGroup, FieldLabel } from '../ui/field';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 
 import { useLocalStorage } from '@uidotdev/usehooks';
 import type { UserSession } from '../../types/user-session';
 import { CreateComment } from '../../services/comment-service';
-import { useNavigate } from 'react-router';
 
 const formSchema = z.object({
   title: z
@@ -36,13 +30,8 @@ const formSchema = z.object({
 export interface CreateCommentFormProps {
   recipeId: string;
 }
-export function CreateCommentForm({
-  recipeId
-}: CreateCommentFormProps) {
-  const [user] = useLocalStorage<UserSession | null>(
-    'user_session'
-  );
-  const navigate = useNavigate();
+export function CreateCommentForm({ recipeId }: CreateCommentFormProps) {
+  const [user] = useLocalStorage<UserSession | null>('user_session');
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -53,13 +42,9 @@ export function CreateCommentForm({
     mode: 'onBlur'
   });
 
-  async function onSubmit(
-    data: z.infer<typeof formSchema>
-  ) {
+  async function onSubmit(data: z.infer<typeof formSchema>) {
     if (!user) {
-      toast.error(
-        'Debes iniciar sesión para comentar una receta'
-      );
+      toast.error('Debes iniciar sesión para comentar una receta');
       return;
     }
 
@@ -73,8 +58,12 @@ export function CreateCommentForm({
       //   toast.error(res.error);
       console.log(res);
     } else {
-      toast.success(`Comentario publicado`);
-      navigate('/recetas/' + recipeId);
+      const scrollY = window.scrollY;
+      window.location.reload();
+      document.addEventListener('load', () => {
+        window.scrollTo({ behavior: 'smooth', top: scrollY });
+        toast.success(`Comentario publicado`);
+      });
     }
   }
 
@@ -96,9 +85,7 @@ export function CreateCommentForm({
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor='input-title'>
-                    Titulo
-                  </FieldLabel>
+                  <FieldLabel htmlFor='input-title'>Titulo</FieldLabel>
                   <Input
                     {...field}
                     id='input-title'
