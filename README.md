@@ -1,4 +1,10 @@
-Repository Backend: https://github.com/Freddy-Baldizon/RecipeApp
+- Repository Backend: https://github.com/Freddy-Baldizon/RecipeApp
+- Repository Frontend: https://github.com/Justin-deb/recipe_app_frontend
+- URL Jira: https://alfxro.atlassian.net/?continue=https%3A%2F%2Falfxro.atlassian.net%2Fwelcome%2Fsoftware%3FprojectId%3D10033&atlOrigin=eyJpIjoiNDBhYjMwODg3NzJhNDYwYzgyMGY2ZjI4ODUxNjdlZGUiLCJwIjoiamlyYS1zb2Z0d2FyZSJ9
+
+- Sitio web: https://recipe-app-frontend-dq62wiem7-justin-web.vercel.app
+- URL API: https://recipe-backend-v9.onrender.com/api
+
 # RecipeApp Frontend
 
 - Fabian Alfaro Sandi
@@ -60,12 +66,12 @@ export const API_URL: string = 'http://127.0.0.1:3001/api';
 
 ## Scripts disponibles
 
-| Comando         | Descripción                                              |
-|-----------------|-----------------------------------------------------------|
-| `pnpm dev`      | Levanta el servidor de desarrollo con hot reload          |
-| `pnpm build`    | Compila TypeScript y genera el build de producción en `dist/` |
-| `pnpm preview`  | Sirve localmente el build de producción                   |
-| `pnpm lint`     | Corre ESLint sobre el proyecto                             |
+| Comando        | Descripción                                                   |
+| -------------- | ------------------------------------------------------------- |
+| `pnpm dev`     | Levanta el servidor de desarrollo con hot reload              |
+| `pnpm build`   | Compila TypeScript y genera el build de producción en `dist/` |
+| `pnpm preview` | Sirve localmente el build de producción                       |
+| `pnpm lint`    | Corre ESLint sobre el proyecto                                |
 
 ## Pruebas end-to-end
 
@@ -92,16 +98,16 @@ src/
 
 ## Rutas principales
 
-| Ruta                  | Página            | Acceso              |
-|------------------------|--------------------|----------------------|
-| `/`                    | Home               | Público              |
-| `/recetas`             | Listado de recetas | Público              |
-| `/recetas/:id`         | Detalle de receta  | Público              |
-| `/login`                | Iniciar sesión     | Solo no autenticados |
-| `/register`             | Registro           | Solo no autenticados |
-| `/crear`                | Crear receta       | Autenticado          |
-| `/favoritos`            | Recetas favoritas  | Autenticado          |
-| `/cuenta`               | Perfil de usuario  | Autenticado          |
+| Ruta           | Página             | Acceso               |
+| -------------- | ------------------ | -------------------- |
+| `/`            | Home               | Público              |
+| `/recetas`     | Listado de recetas | Público              |
+| `/recetas/:id` | Detalle de receta  | Público              |
+| `/login`       | Iniciar sesión     | Solo no autenticados |
+| `/register`    | Registro           | Solo no autenticados |
+| `/crear`       | Crear receta       | Autenticado          |
+| `/favoritos`   | Recetas favoritas  | Autenticado          |
+| `/cuenta`      | Perfil de usuario  | Autenticado          |
 
 ## Backend
 

@@ -30,9 +30,39 @@ export async function Login({
     };
   }
 
+  const allUsersRes = await fetch(`${API_URL}/user`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+
+  if (!allUsersRes.ok) {
+    const errorData = await allUsersRes.json();
+    return {
+      data: null,
+      error: errorData || 'Error al obtener datos del usuario'
+    };
+  }
+
+  const allUsersData = await allUsersRes.json();
+  const userData: User = allUsersData.find(
+    (user: User) => user.email === email
+  );
+  const resData: UserSession = await res.json();
+  console.log('User Data:', userData);
+  console.log('Response Data:', resData);
+  console.log('All Users Data:', allUsersData);
+
   return {
     error: null,
-    data: await res.json()
+    data: {
+      avatar: userData.avatar,
+      email: userData.email,
+      last_session: resData.last_session,
+      username: userData.username,
+      id: userData.id || 0
+    }
   };
 }
 

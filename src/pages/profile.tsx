@@ -4,17 +4,19 @@ import { Button } from '../components/ui/button';
 import { LogOutIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEffect, useState } from 'react';
-import type { Recipe } from '../types/types';
+import type { Recipe, RecipeFavorite } from '../types/types';
 import { deleteRecipe, getRecipesByUser } from '../services/recipe-service';
 import { RecipeCard } from '../components/recipe-card';
 
 export default function ProfilePage() {
   const [user, setUser] = useLocalStorage<UserSession | null>('user_session');
+  const [, setFavorites] = useLocalStorage<RecipeFavorite[]>('favorites');
   const [myRecipes, setMyRecipes] = useState<Recipe[]>([] as Recipe[]);
   const [, setIsLoading] = useState<boolean>(false);
 
   const handleLogout = () => {
     setUser(null);
+    setFavorites([]);
     toast.info('Cerraste sesión');
   };
 

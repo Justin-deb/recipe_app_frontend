@@ -11,12 +11,7 @@ import {
   CardHeader,
   CardTitle
 } from '../ui/card';
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel
-} from '../ui/field';
+import { Field, FieldError, FieldGroup, FieldLabel } from '../ui/field';
 import { Input } from '../ui/input';
 import { useNavigate } from 'react-router';
 import { useLocalStorage } from '@uidotdev/usehooks';
@@ -37,17 +32,14 @@ export function LoginForm() {
       password: ''
     }
   });
-  async function onSubmit(
-    data: z.infer<typeof formSchema>
-  ) {
+  async function onSubmit(data: z.infer<typeof formSchema>) {
     const res = await Login(data);
     if (res.error) {
       toast.error(res.error);
     } else {
       setUser(res.data);
-      toast.success(
-        `Bienvenido de vuelta, ${res.data?.username}`
-      );
+      console.log(res);
+      toast.success(`Bienvenido de vuelta, ${res.data?.username}`);
     }
   }
   return (
@@ -55,8 +47,8 @@ export function LoginForm() {
       <CardHeader>
         <CardTitle>Iniciar Sesión</CardTitle>
         <CardDescription>
-          Guarda recetas, crea las tuyas propias y
-          administra tu perfil al iniciar sesion.
+          Guarda recetas, crea las tuyas propias y administra tu perfil al
+          iniciar sesion.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -71,9 +63,7 @@ export function LoginForm() {
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor='form-rhf-input-email'>
-                    Correo
-                  </FieldLabel>
+                  <FieldLabel htmlFor='form-rhf-input-email'>Correo</FieldLabel>
                   <Input
                     {...field}
                     id='form-rhf-input-email'
@@ -112,9 +102,7 @@ export function LoginForm() {
                     aria-required
                   />
                   {fieldState.invalid && (
-                    <FieldError
-                      errors={[fieldState.error]}
-                    />
+                    <FieldError errors={[fieldState.error]} />
                   )}
                 </Field>
               )}
